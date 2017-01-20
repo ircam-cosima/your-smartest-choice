@@ -1,0 +1,9 @@
+{
+  "__comments": "Directions are counter clock-wise",
+  "directions": {
+    "red": 0,
+    "yellow": 90,
+    "pink": 180,
+    "blue": 270,
+  }
+}

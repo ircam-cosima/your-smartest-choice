@@ -1,0 +1,54 @@
+// Entry point for application specific styles
+
+.intermezzo-state {
+  .score-wrapper {
+    padding: 0;
+  }
+
+  .score {
+    float: left;
+    // line-height: 100%;
+    text-align: center;
+    font-size: 2rem;
+    opacity: 0.7;
+    vertical-align: middle;
+  }
+}
+
+.scores-state {
+  .score-wrapper {
+    padding: 0;
+  }
+
+  .foreground {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .score {
+    // float: left;
+    // line-height: 100%;
+    text-align: center;
+    font-size: 2rem;
+    // opacity: 0.7;
+    // vertical-align: middle;
+    position: absolute;
+
+    p.local {
+      display: block;
+    }
+
+    p.global {
+      position: absolute;
+      line-height: normal;
+      height: auto;
+      color: #eeeeee;
+    }
+
+    &.red .global { top: 4px; left: 4px; }
+    &.blue .global { top: 4px; right: 4px; }
+    &.pink .global { bottom: 4px; left: 4px; }
+    &.yellow .global { bottom: 4px; right: 4px; }
+  }
+}
