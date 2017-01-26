@@ -54,6 +54,32 @@ class ImageManager extends Service {
   get(name) {
     return this.images[name];
   }
+
+  getAsCanvas(name) {
+    const img = this.images[name];
+    const w = img.width;
+    const h = img.height;
+    const $canvas = document.createElement('canvas');
+    const ctx = $canvas.getContext('2d');
+    ctx.canvas.width = w;
+    ctx.canvas.height = h;
+    ctx.drawImage(img, 0, 0, w, h);
+
+    return $canvas;
+  }
+
+  getAsHalfSizeCanvas(name) {
+    const img = this.images[name];
+    const w = img.width;
+    const h = img.height;
+    const $canvas = document.createElement('canvas');
+    const ctx = $canvas.getContext('2d');
+    ctx.canvas.width = w;
+    ctx.canvas.height = h;
+    ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.floor(w / 2), Math.floor(h / 2));
+
+    return $canvas;
+  }
 }
 
 serviceManager.register(SERVICE_ID, ImageManager);

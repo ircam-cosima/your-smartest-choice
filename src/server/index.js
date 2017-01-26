@@ -1,7 +1,9 @@
 import 'source-map-support/register'; // enable sourcemaps in node
 import * as soundworks from 'soundworks/server';
 import PlayerExperience from './PlayerExperience';
+
 import defaultConfig from './config/default';
+import productionConfig from './config/production';
 
 import midiConfig from '../../data/midi-config';
 
@@ -11,9 +13,13 @@ import Midi from './services/Midi';
 let config = null;
 
 switch(process.env.ENV) {
+  case 'production':
   default:
-    config = defaultConfig;
+    config = productionConfig;
     break;
+  // default: // @todo - don't forget to uncomment that
+  //   config = defaultConfig;
+  //   break;
 }
 
 // configure express environment ('production' enables cache systems)
@@ -53,9 +59,17 @@ sharedParams.addEnum('balloonCover:explode', 'balloonCover:explode', ['blue', 'p
 // kill the balloons state controls
 sharedParams.addEnum('killTheBalloons:start', 'killTheBalloons:start', ['stop', 'start'], 'stop');
 sharedParams.addNumber('killTheBalloons:spawnInterval', 'killTheBalloons:spawnInterval', 0, 1, 0.001, 1);
+sharedParams.addEnum('killTheBalloons:samplesSet', 'killTheBalloons:samplesSet', [0, 1, 2, 3, 4], 0);
 
 // avoid the rain state controls
 sharedParams.addEnum('avoidTheRain:start', 'avoidTheRain:start', ['stop', 'start'], 'stop');
+sharedParams.addEnum('avoidTheRain:harmony', 'avoidTheRain:harmony', [
+  'M15:0', 'M15:1', 'M15:2', 'M15:3',
+  'M16:0', 'M16:1', 'M16:2', 'M16:3',
+  'M17:0', 'M17:1', 'M17:2', 'M17:3',
+  'M18:0', 'M18:1', 'M18:2', 'M18:3',
+], 'M15:0');
+
 sharedParams.addNumber('avoidTheRain:balloonRadius', 'avoidTheRain:balloonRadius', 40, 200, 1, 40);
 sharedParams.addEnum('avoidTheRain:toggleRain', 'avoidTheRain:toggleRain', ['stop', 'start'], 'stop');
 sharedParams.addNumber('avoidTheRain:spawnInterval', 'avoidTheRain:spawnInterval', 0, 1, 0.001, 1);

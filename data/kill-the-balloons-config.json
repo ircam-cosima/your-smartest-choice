@@ -1,0 +1,125 @@
+{
+  "sets": [
+    {
+      "red": {
+        "fileIndex": 0,
+        "duration": [400, 700]
+      },
+      "yellow": {
+        "fileIndex": 1,
+        "duration": [400, 600]
+      },
+      "blue": {
+        "fileIndex": 2,
+        "duration": [200, 300]
+      },
+      "pink": {
+        "fileIndex": 3,
+        "duration": [500, 700]
+      }
+    },
+
+    {
+      "red": {
+        "fileIndex": 4,
+        "duration": [400, 600]
+      },
+      "yellow": {
+        "fileIndex": 5,
+        "duration": [500, 700]
+      },
+      "blue": {
+        "fileIndex": 6,
+        "duration": [900, 1000]
+      },
+      "pink": {
+        "fileIndex": 7,
+        "duration": [290, 300]
+      }
+    },
+
+    {
+      "red": {
+        "fileIndex": 8,
+        "duration": [900, 1000]
+      },
+      "yellow": {
+        "fileIndex": 9,
+        "duration": [200, 400]
+      },
+      "blue": {
+        "fileIndex": 10,
+        "duration": [150, 300]
+      },
+      "pink": {
+        "fileIndex": 11,
+        "duration": [200, 400]
+      }
+    },
+
+    {
+      "red": {
+        "fileIndex": 12,
+        "duration": [300, 500]
+      },
+      "yellow": {
+        "fileIndex": 13,
+        "duration": [200, 300]
+      },
+      "blue": {
+        "fileIndex": 14,
+        "duration": [100, 600]
+      },
+      "pink": {
+        "fileIndex": 15,
+        "duration": [200, 300]
+      }
+    },
+
+    {
+      "red": {
+        "fileIndex": 16,
+        "duration": [300, 350]
+      },
+      "yellow": {
+        "fileIndex": 17,
+        "duration": [150, 400]
+      },
+      "blue": {
+        "fileIndex": 18,
+        "duration": [200, 400]
+      },
+      "pink": {
+        "fileIndex": 19,
+        "duration": [100, 400]
+      }
+    }
+
+  ],
+  "files": [
+    "set1/02Bass_and_surround_sound_testshort4.mp3",
+    "set1/54974__davidworksonline__spacedoor-open.mp3",
+    "set1/82124__gniffelbaf__balloon-deflate-03.mp3",
+    "set1/179550__clinthammer__clinthammermusic-dubstep-revocussion.mp3",
+
+    "set2/ball_flute-out.mp3",
+    "set2/ball_flute.mp3",
+    "set2/ball_game_babble2.mp3",
+    "set2/ball_game_gun3.mp3",
+
+    "set3/ballon_explose3.mp3",
+    "set3/ballon_singing.mp3",
+    "set3/ballon_skin_noise2.mp3",
+    "set3/balloon-deflate.mp3",
+
+    "set4/ballon_acc1.mp3",
+    "set4/ballon_acc2.mp3",
+    "set4/ballon_acc3.mp3",
+    "set4/ballon_acc5.mp3",
+
+    "set5/bulubulu.mp3",
+    "set5/electro_pulse.mp3",
+    "set5/revers_brazilor.mp3",
+    "set5/reverse3Betia.mp3"
+  ]
+}

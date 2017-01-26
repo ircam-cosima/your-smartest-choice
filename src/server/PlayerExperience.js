@@ -1,5 +1,7 @@
 import { Experience } from 'soundworks/server';
 
+
+const keyboardOffset = 11;
 // server-side 'player' experience.
 export default class PlayerExperience extends Experience {
   constructor(clientType, midiConfig, winnersOrder) {
@@ -17,19 +19,20 @@ export default class PlayerExperience extends Experience {
       fakeResults: {},
       nbrProcessed: 0,
       winnersOrder: winnersOrder,
+      total: 0,
     };
 
-    this.broadcastedGlobalScore = false;
     this.broadcastGlobalScoreTimeout = null;
   }
 
   start() {
     this.midi.addListener('NOTE_ON', (pitch, velocity, msg) => {
-      this.broadcast('player', null, 'note:on', pitch);
+      this.broadcast('player', null, 'note:on', pitch - keyboardOffset);
+      console.log('NOTE_ON: ' + (pitch - keyboardOffset));
     });
 
     this.midi.addListener('NOTE_OFF', (pitch, velocity, msg) => {
-      this.broadcast('player', null, 'note:off', pitch);
+      this.broadcast('player', null, 'note:off', pitch - keyboardOffset);
     });
   }
 
@@ -49,11 +52,14 @@ export default class PlayerExperience extends Experience {
   _onPlayerScore(client) {
     return (playerScore) => {
       const realResults = this.globalScore.realResults;
+      let sum = 0;
 
       this.sharedParams.update('score:status', 'process');
 
-      for (let color in playerScore)
+      for (let color in playerScore) {
         realResults[color] += playerScore[color];
+        sum += playerScore[color];
+      }
 
       // just make sure that something realisitc will be broadcasted at some point
       if (this.globalScore.nbrProcessed === 0) {
@@ -63,6 +69,7 @@ export default class PlayerExperience extends Experience {
       }
 
       this.globalScore.nbrProcessed += 1;
+      this.globalScore.total += sum;
 
       if (this.globalScore.nbrProcessed >= this.clients.length) {
         // cancel the "big fail" timeout
@@ -74,19 +81,14 @@ export default class PlayerExperience extends Experience {
 
   _broadcastGlobalScore() {
     // make sure we broadcast only once...
-    if (this.broadcastedGlobalScore === false) {
-      const { realResults, winnersOrder, fakeResults } = this.globalScore;
-      // order real rsults by descending order
-      const results = Object.values(realResults);
-      results.sort((a, b) => b - a);
-      // recreate fake results from real results
-      winnersOrder.forEach((color, index) => fakeResults[color] = results[index]);
+    const { realResults, winnersOrder, fakeResults } = this.globalScore;
+    // order real rsults by descending order
+    const results = Object.values(realResults);
+    results.sort((a, b) => b - a);
+    // recreate fake results from real results
+    winnersOrder.forEach((color, index) => fakeResults[color] = results[index]);
 
-      this.broadcast('player', null, 'global:score', this.globalScore);
-      this.sharedParams.update('score:status', 'broadcasted');
-
-      // flag as done
-      // this.broadcastedGlobalScore = true;
-    }
+    this.broadcast('player', null, 'global:score', this.globalScore);
+    this.sharedParams.update('score:status', 'broadcasted');
   }
 }

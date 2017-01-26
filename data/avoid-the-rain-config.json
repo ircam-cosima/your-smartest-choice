@@ -1,0 +1,115 @@
+{
+  "sines-score": {
+    "M15": [
+      {
+        "fileIndex": 0,
+        "detunes": [
+          [0, 100],
+          [-200, 100],
+          [100],
+          [200]
+        ]
+      },
+      {
+        "fileIndex": 1,
+        "detunes": [
+          [0, 100],
+          [-100, 100],
+          [100],
+          [300]
+        ]
+      }
+    ],
+    "M16": [
+      {
+        "fileIndex": 2,
+        "detunes": [
+          [0, 700],
+          [-400, 300],
+          [300],
+          [200]
+        ]
+      },
+      {
+        "fileIndex": 3,
+        "detunes": [
+          [0, 100],
+          [-200, 100],
+          [0],
+          [500]
+        ]
+      }
+    ],
+    "M17": [
+      {
+        "fileIndex": 4,
+        "detunes": [
+          [-700, 300],
+          [-200, 100],
+          [-500, 400],
+          [200, 1100]
+        ]
+      },
+      {
+        "fileIndex": 5,
+        "detunes": [
+          [0, 300],
+          [-500, 700],
+          [0, 300],
+          [-700, 300]
+        ]
+      },
+    ],
+    "M18": [
+      {
+        "fileIndex": 4,
+        "detunes": [
+          [-200, 0],
+          [-200],
+          [0],
+          [-200]
+        ]
+      },
+      {
+        "fileIndex": 5,
+        "detunes": [
+          [0, 300],
+          [0, 1100],
+          [0, 300],
+          [0]
+        ]
+      },
+    ]
+  },
+
+  "__comment": "files to load, use the index in decription",
+  "glitches": [
+    "glitch12.wav",
+    "glitch14.wav",
+    "glitch15.wav",
+    "glitch16.wav",
+    "glitch17.wav",
+    "glitch18.wav",
+    "glitch19.wav",
+    "glitch20.wav",
+    "glitch21.wav",
+    "glitch22.wav",
+    "glitch23.wav",
+    "glitch24.wav",
+    "glitch25.wav",
+    "glitch26.wav",
+    "glitch27.wav",
+    "glitch28.wav",
+    "glitch29.wav"
+  ],
+  "sines": [
+    "sine-1.mp3",
+    "sine-2.mp3",
+    "sine-3.mp3",
+    "sine-4.mp3",
+    "sine-5.mp3",
+    "sine-6.mp3",
+    "sine-7.mp3",
+    "sine-8.mp3"
+  ]
+}

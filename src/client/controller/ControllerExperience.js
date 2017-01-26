@@ -4,6 +4,8 @@ class ControllerExperience extends BasicSharedController {
   constructor() {
     super();
 
+    this.setGuiOptions('state', { type: 'buttons' });
+
     // balloon cover
     this.setGuiOptions('balloonCover:number', {
       type: 'slider',
@@ -11,10 +13,12 @@ class ControllerExperience extends BasicSharedController {
     });
 
     this.setGuiOptions('balloonCover:displayBackground', { type: 'buttons' });
+    this.setGuiOptions('balloonCover:toggleBackground', { type: 'buttons' });
     this.setGuiOptions('balloonCover:explode', { type: 'buttons' });
 
     // kill the balloons
     this.setGuiOptions('killTheBalloons:start', { type: 'buttons' });
+    this.setGuiOptions('killTheBalloons:samplesSet', { type: 'buttons' });
 
     this.setGuiOptions('killTheBalloons:spawnInterval', {
       type: 'slider',

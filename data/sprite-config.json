@@ -1,0 +1,34 @@
+{
+  "clipSize": { "width": 231, "height": 233 },
+  "smallSizeRatio": 0.25,
+  "largeSizeRatio": 0.7,
+  "minSizeScoreRatio": 0.5,
+  "animationRate": 2,
+
+  "groups": {
+    "blue" : {
+      "label": "blue",
+      "hex": "#4770c4",
+      "file": "images/sprite-blue.png",
+      "clipPositions": [[0, 0], [249, 0], [514, 0], [784, 0], [1047, 0], [1312, 0]]
+    },
+    "pink" : {
+      "label": "pink",
+      "hex": "#ff0098",
+      "file": "images/sprite-pink.png",
+      "clipPositions": [[0, 0], [249, 0], [514, 0], [784, 0], [1047, 0], [1312, 0]]
+    },
+    "yellow" : {
+      "label": "yellow",
+      "hex": "#d0cf00",
+      "file": "images/sprite-yellow.png",
+      "clipPositions": [[0, 0], [249, 0], [514, 0], [784, 0], [1047, 0], [1312, 0]]
+    },
+    "red" : {
+      "label": "red",
+      "hex": "#e70300",
+      "file": "images/sprite-red.png",
+      "clipPositions": [[0, 0], [249, 0], [514, 0], [784, 0], [1047, 0], [1312, 0]]
+    }
+  }
+}

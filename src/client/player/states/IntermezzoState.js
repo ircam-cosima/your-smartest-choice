@@ -157,7 +157,7 @@ class IntermezzoState {
 
     this.view.render();
     this.view.show();
-    this.view.appendTo(this.experience.view.$el);
+    this.view.appendTo(this.experience.view.getStateContainer());
 
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);

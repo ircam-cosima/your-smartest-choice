@@ -77,7 +77,7 @@ class CompassBalloon extends Balloon {
 
     if (size !== this.targetSize) {
       const delta = this.targetSize - size;
-      const croppedDelta = Math.max(-1, Math.min(delta, 1));
+      const croppedDelta = Math.max(-10, Math.min(delta, 10));
 
       this.width += croppedDelta;
       this.height += croppedDelta;
@@ -134,15 +134,12 @@ class CompassRenderer extends Renderer {
     }
   }
 
-  setActiveColor(color) {
-    if (color !== this._activeColor)
-      this._activeColor = color;
+  setColor(color) {
+    this._activeColor = color;
   }
 
   setAngle(angle) {
-    const rad = angle / 360 * _2PI;
-    this._angle = this._smoothAngle.process(rad);
-    // this._angle = rad;
+    this._angle = this._smoothAngle.process(angle / 360 * _2PI);
   }
 
   update(dt) {
@@ -180,9 +177,7 @@ class CompassRenderer extends Renderer {
       ctx.save();
       ctx.rotate(relAngle);
       ctx.translate(0, -size / 2);
-
       balloon.render(ctx);
-
       ctx.restore();
     }
 
@@ -196,8 +191,12 @@ class CompassState {
     this.globalState = globalState;
 
     this._onCompassUpdate = this._onCompassUpdate.bind(this);
+    this._onGroupUpdate = this._onGroupUpdate.bind(this);
 
-    this.renderer = new CompassRenderer(this.experience.spriteConfig, this.experience.areaConfig.directions);
+    this.renderer = new CompassRenderer(
+      this.experience.spriteConfig,
+      this.experience.areaConfig.directions
+    );
   }
 
   enter() {
@@ -209,7 +208,7 @@ class CompassState {
 
     this.view.render();
     this.view.show();
-    this.view.appendTo(this.experience.view.$el);
+    this.view.appendTo(this.experience.view.getStateContainer());
 
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
@@ -217,7 +216,10 @@ class CompassState {
 
     this.view.addRenderer(this.renderer);
 
-    this.experience.addCompassListener(this._onCompassUpdate);
+    this.experience.addCompassListener('compass', this._onCompassUpdate);
+    this.experience.addCompassListener('group', this._onGroupUpdate);
+    // set renderer with current group
+    this.renderer.setColor(this.experience.groupFilter.getState());
   }
 
   exit() {
@@ -226,14 +228,17 @@ class CompassState {
 
     this.view.removeRenderer(this.renderer);
     this.view.remove();
+
+    this.experience.removeCompassListener('compass', this._onCompassUpdate);
+    this.experience.removeCompassListener('group', this._onGroupUpdate);
   }
 
-  _onCompassUpdate(angle, color) {
+  _onCompassUpdate(angle) {
     this.renderer.setAngle(angle);
-    this.renderer.setActiveColor(color);
-    // @debug
-    // this.view.content.angle = `${parseInt(angle)}°`;
-    // this.view.render('.section-center');
+  }
+
+  _onGroupUpdate(color) {
+    this.renderer.setColor(color);
   }
 }
 

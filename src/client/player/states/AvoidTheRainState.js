@@ -1,13 +1,21 @@
 import { CanvasView, Renderer, viewport } from 'soundworks/client';
+import AvoidTheRainSynth from '../audio/AvoidTheRainSynth';
 import Balloon from '../renderers/Balloon';
 
 const template = `
   <canvas class="background"></canvas>
   <div class="foreground">
-    <div class="section-top flex-middle"></div>
+    <div class="section-top">
+      <div class="score">
+        <p class="blue"><%= score.blue %></p>
+        <p class="pink"><%= score.pink %></p>
+        <p class="yellow"><%= score.yellow %></p>
+        <p class="red"><%= score.red %></p>
+      </div>
+    </div>
     <div class="section-center flex-center">
       <% if (state === 'intro') { %>
-        <p>Stage 2<br />Avoid the rain!</p>
+        <p>Level 2<br />Avoid the rain drops!</p>
       <% } else if (state === 'go') { %>
         <p>Go!</p>
       <% } %>
@@ -19,14 +27,23 @@ const template = `
 const _2PI = Math.PI * 2;
 
 class AvoidTheRainView extends CanvasView {
+  onRender() {
+    super.onRender();
+    this.$score = this.$el.querySelector('.score');
+  }
 
+  hideScore() {
+    this.$score.classList.add('hidden');
+  }
 }
 
 class FloatingBalloon extends Balloon {
-  constructor(...args) {
+  constructor(fadeInDuration, ...args) {
     super(...args);
 
     this.opacity = 0;
+    this.fadeInDuration = fadeInDuration;
+    this.timeFadeIn = 0;
     this.vx = 0;
     this.vy = 0;
   }
@@ -48,8 +65,12 @@ class FloatingBalloon extends Balloon {
     this.x = Math.max(0, Math.min(width, this.x));
     this.y = Math.max(0, Math.min(height, this.y));
 
-    if (this.opacity < 1)
-      this.opacity = Math.min(1, this.opacity += 0.02);
+    if (this.timeFadeIn < this.fadeInDuration) {
+      this.timeFadeIn += dt;
+      this.opacity = Math.min(1, this.timeFadeIn / this.fadeInDuration);
+    } else {
+      this.opacity = 1;
+    }
   }
 }
 
@@ -58,7 +79,13 @@ class RainDrop {
     this.x = x;
     this.y = y;
     this.vy = vy;
-    this.radius = 2;
+    this.radius = Math.round(Math.random()) + 1;
+
+    // rgb(153, 204, 255)
+    const r = Math.round(Math.random() * (255 - 153) + 153);
+    const g = Math.round(Math.random() * (255 - 204) + 204);
+    const b = 255;
+    this.color = `rgb(${r}, ${g}, ${b})`;
   }
 
   update(dt) {
@@ -68,7 +95,7 @@ class RainDrop {
   render(ctx) {
     ctx.save();
     ctx.beginPath();
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = this.color;
     ctx.arc(this.x, this.y, this.radius, 0, _2PI, false);
     ctx.fill();
     ctx.closePath();
@@ -87,11 +114,13 @@ class AvoidTheRainRenderer extends Renderer {
 
     this.rainDrops = [];
     this.balloon = null;
+
+    this.getBalloonNormalizedPosition = this.getBalloonNormalizedPosition.bind(this);
   }
 
-  createBalloon(radius) {
-    if (this.balloon !== null)
-      return;
+  createBalloon(radius, fadeInDuration) {
+    // if (this.balloon !== null)
+    //   return;
 
     const config = this.spriteConfig;
     const colorIndex = Math.floor(Math.random() * config.colors.length);
@@ -106,7 +135,7 @@ class AvoidTheRainRenderer extends Renderer {
     const x = this.canvasWidth / 2;
     const y = this.canvasHeight * 3 / 5;
 
-    const balloon = new FloatingBalloon(color, image, clipPositions, clipWidth, clipHeight, refreshRate, size, size, x, y);
+    const balloon = new FloatingBalloon(fadeInDuration, color, image, clipPositions, clipWidth, clipHeight, refreshRate, size, size, x, y);
 
     this.balloon = balloon;
   }
@@ -132,11 +161,20 @@ class AvoidTheRainRenderer extends Renderer {
     }
   }
 
+  getBalloonNormalizedPosition() {
+    let pos = null;
+
+    if (this.balloon)
+      pos = [this.balloon.x / this.canvasWidth, this.balloon.y / this.canvasHeight];
+
+    return pos;
+  }
+
   init() {}
 
   testRainHit() {
     if (this.balloon !== null &&
-        this.balloon.explode !== null &&
+        this.balloon.explode !== true &&
         this.balloon.opacity >= 1
     ) {
       const x = this.balloon.x;
@@ -216,6 +254,7 @@ class AvoidTheRainState {
     this.createBalloonTimeout = null;
 
     this._onResize = this._onResize.bind(this);
+    this._spawnBalloon = this._spawnBalloon.bind(this);
     this._onStart = this._onStart.bind(this);
     this._updateBalloonRadius = this._updateBalloonRadius.bind(this);
     this._onAccelerationInput = this._onAccelerationInput.bind(this);
@@ -223,8 +262,16 @@ class AvoidTheRainState {
     this._updateSpawnInterval = this._updateSpawnInterval.bind(this);
     this._onRainHit = this._onRainHit.bind(this);
     this._onExploded = this._onExploded.bind(this);
+    this._onHarmonyUpdate = this._onHarmonyUpdate.bind(this);
 
     this.renderer = new AvoidTheRainRenderer(this.experience.spriteConfig, this._onRainHit, this._onExploded);
+
+    this.synth = new AvoidTheRainSynth(
+      this.experience.audioBufferManager.get('avoid-the-rain:sines'),
+      this.experience.audioBufferManager.get('avoid-the-rain:glitches'),
+      this.experience.avoidTheRainConfig,
+      this.experience.getAudioDestination()
+    );
   }
 
   enter() {
@@ -232,19 +279,21 @@ class AvoidTheRainState {
 
     this.view = new AvoidTheRainView(template, {
       state: 'intro',
+      score: Object.assign({}, this.globalState.score),
     }, {}, {
       className: ['avoid-the-rain-state', 'foreground'],
     });
 
     this.view.render();
     this.view.show();
-    this.view.appendTo(this.experience.view.$el);
+    this.view.appendTo(this.experience.view.getStateContainer());
 
     const goDuration = 1;
     let goTime = 0;
 
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
+
       //
       if (this.view.content.state === 'go') {
         goTime += dt;
@@ -254,15 +303,25 @@ class AvoidTheRainState {
           this.view.render('.section-center');
         }
       }
+
+      // update synth normalized position - lag of one frame...
+      const pos = this.renderer.getBalloonNormalizedPosition();
+      if (pos !== null) { // don't update synth control values if no balloon
+        this.synth.controlPosition[0] = pos[0];
+        this.synth.controlPosition[1] = pos[1];
+        this.synth.onControlUpdate();
+      }
     });
 
     this.view.addRenderer(this.renderer);
 
     const sharedParams = this.experience.sharedParams;
-    sharedParams.addParamListener('avoidTheRain:start', this._onStart);
     sharedParams.addParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
-    sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
     sharedParams.addParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
+    sharedParams.addParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
+    // call this at the end to be sure all other params are set
+    sharedParams.addParamListener('avoidTheRain:start', this._onStart);
+    sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
     this.experience.addAccelerationListener(this._onAccelerationInput);
   }
@@ -270,6 +329,7 @@ class AvoidTheRainState {
   exit() {
     viewport.removeResizeListener(this._onResize);
 
+    this.view.hideScore();
     this.view.$el.classList.remove('background');
     this.view.$el.classList.add('foreground');
 
@@ -277,12 +337,16 @@ class AvoidTheRainState {
     clearTimeout(this.createBalloonTimeout);
 
     this.renderer.explode();
+    this.synth.stopSine();
+    this.synth.triggerGlitch();
+
     // stop listening sharedParams
     const sharedParams = this.experience.sharedParams;
-    sharedParams.removeParamListener('avoidTheRain:start', this._onStart);
+    sharedParams.removeParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     sharedParams.removeParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
-    sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
     sharedParams.removeParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
+    sharedParams.removeParamListener('avoidTheRain:start', this._onStart);
+    sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
     // stop listening motion-input
     this.experience.removeAccelerationListener(this._onAccelerationInput);
   }
@@ -292,7 +356,7 @@ class AvoidTheRainState {
       this.view.content.state = 'go';
       this.view.render('.section-center');
 
-      this.renderer.createBalloon(this.currentBalloonRadius);
+      this._spawnBalloon();
     }
   }
 
@@ -317,6 +381,9 @@ class AvoidTheRainState {
     if (this.orientation === 'portrait') {
       vx = - data[0] / 9.81;
       vy = (data[1] - 5) / 9.81;
+    } else if (this.orientation === 'landscape') {
+      vx = - data[1] / 9.81;
+      vy = - (data[0] + 5) / 9.81;
     }
 
     const k = 500;
@@ -325,13 +392,23 @@ class AvoidTheRainState {
 
   _onRainHit(color) {
     this.globalState.score[color] -= 1;
+    this.view.content.score[color] -= 1;
+    this.view.render('.score');
 
-    this.createBalloonTimeout = setTimeout(() => {
-      this.renderer.createBalloon(this.currentBalloonRadius);
-    }, 1000);
+    this.synth.stopSine();
+    this.synth.triggerGlitch();
+    // respawn ballon in one second (should be bigger than grain duration)
+    this.createBalloonTimeout = setTimeout(this._spawnBalloon, 1000);
+  }
+
+  _spawnBalloon() {
+    const fadeInDuration = 1;
+    this.renderer.createBalloon(this.currentBalloonRadius, fadeInDuration);
+    this.synth.startSine(fadeInDuration);
   }
 
   _toggleRain(value) {
+
     if (value === 'start' &&
         this.view.content.state !== 'intro' &&
         this.spawnTimeout === null
@@ -349,9 +426,13 @@ class AvoidTheRainState {
 
   _spawnRainDrop() {
     this.renderer.createRainDrop();
-
-    const delay = Math.random() * this.spawnInterval * 0.5 + this.spawnInterval * 0.5;
+    // min delay to 50ms
+    const delay = Math.max(0.05, Math.random() * this.spawnInterval * 0.5 + this.spawnInterval * 0.5);
     this.spawnTimeout = setTimeout(() => this._spawnRainDrop(), delay * 1000);
+  }
+
+  _onHarmonyUpdate(value) {
+    this.synth.setNextHarmony(value);
   }
 }
 

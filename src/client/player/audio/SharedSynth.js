@@ -4,14 +4,16 @@ import SampleSynth from './SampleSynth';
 const audioContext = audio.audioContext;
 
 class SharedSynth {
-  constructor(config, buffers, groupFilter) {
+  constructor(config, buffers, groupFilter, output) {
     this.groupFilter = groupFilter; // zone filter service
-    this.config = new Map();
-    this.pitchSynthMap = new Map();
+    this.output = output;
 
-    this.output = audioContext.createGain();
-    this.output.connect(audioContext.destination);
-    this.output.gain.value = 1;
+    this.pitchConfigMap = new Map();
+    this.configSynthMap = new Map();
+    this.activeConfigs = new Set();
+
+    this._currentSynth = null;
+    this._currentConfig = null;
 
     config.forEach((conf, index) => {
       conf.buffer = buffers[index];
@@ -20,29 +22,71 @@ class SharedSynth {
       const synth = new SampleSynth(conf);
       synth.connect(this.output);
 
-      this.pitchSynthMap.set(pitch, synth);
-      this.config.set(pitch, conf);
+      this.pitchConfigMap.set(pitch, conf);
+      this.configSynthMap.set(conf, synth);
     });
+
+    this.updateGroup = this.updateGroup.bind(this);
   }
 
-  trigger(pitch) {
-    const config = this.config.get(pitch);
+  updateGroup(group) {
+    if (this._currentConfig && this._currentConfig.group !== 'all')
+      this._stop();
+    else if (this._currentConfig && this._currentConfig.group === 'all')
+      return this._currentConfig;
 
-    if (config) {
-      const group = config.group;
-
-      if (this.groupFilter.test(group) || group === 'all') {
-        const synth = this.pitchSynthMap.get(pitch);
-        synth.start(audioContext.currentTime);
+    for (let config of this.activeConfigs) {
+      if (config.group === group ||  config.group === 'all') {
+        this._start(config);
+        return config;
       }
     }
+
+    return null;
   }
 
-  stop(pitch) {
-    const synth = this.pitchSynthMap.get(pitch);
+  noteOn(pitch) {
+    const config = this.pitchConfigMap.get(pitch);
 
-    if (synth)
-      synth.stop(audioContext.currentTime);
+    if (config) {
+      this.activeConfigs.add(config);
+
+      if (this.groupFilter.test(config.group) || config.group === 'all') {
+        this._stop();
+        this._start(config);
+        return config;
+      }
+    }
+
+    return null;
+  }
+
+  noteOff(pitch) {
+    const config = this.pitchConfigMap.get(pitch);
+
+    if (config) {
+      this.activeConfigs.delete(config);
+      this._stop();
+      return config;
+    }
+
+    return null;
+  }
+
+  _start(config) {
+    const synth = this.configSynthMap.get(config);
+    synth.start(audioContext.currentTime);
+
+    this._currentSynth = synth;
+    this._currentConfig = config;
+  }
+
+  _stop() {
+    if (this._currentSynth !== null) {
+      this._currentSynth.stop(audioContext.currentTime);
+      this._currentSynth = null;
+      this._currentConfig = null;
+    }
   }
 }
 

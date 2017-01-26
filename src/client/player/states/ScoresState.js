@@ -31,13 +31,7 @@ class ScoresView extends CanvasView {
   onRender() {
     super.onRender();
 
-    // this.$red = this.$el.querySelector('.red');
-    // this.$blue = this.$el.querySelector('.blue');
-    // this.$pink = this.$el.querySelector('.pink');
-    // this.$yellow = this.$el.querySelector('.yellow');
-
     this.$scores = Array.from(this.$el.querySelectorAll('.score'));
-
     this.$foreground = this.$el.querySelector('.foreground');
   }
 
@@ -122,7 +116,8 @@ class ScoresRenderer extends Renderer {
     }
 
     const score = localScore[color];
-    const normScore = (score - minScore) / (maxScore - minScore);
+    const normScore = (maxScore - minScore) === 0 ?
+      0 : (score - minScore) / (maxScore - minScore);
     const remainingRatio = 1 - this.transferRatios[color];
     const remainingNormScore = normScore * remainingRatio;
     const displaySize = (maxSize - minSize) * remainingNormScore + minSize;
@@ -153,7 +148,8 @@ class ScoresRenderer extends Renderer {
     }
 
     const score = globalScore[color];
-    const normScore = (score - minScore) / (maxScore - minScore);
+    const normScore = (maxScore - minScore) === 0 ?
+      0 : (score - minScore) / (maxScore - minScore);
     const ratio = this.transferRatios[color];
     const adjustedNormScore = normScore * ratio;
     const displaySize = (maxSize - minSize) * adjustedNormScore + minSize;
@@ -292,7 +288,7 @@ class ScoresState {
     this.globalScore = null;
     this.transferRatios = { red: 0, blue: 0, pink: 0, yellow: 0 };
     // @debug
-    this.localScore = { red: -12, blue: 35, pink: 23, yellow: 18 };
+    // this.localScore = { red: -12, blue: 35, pink: 23, yellow: 18 };
 
     this._onGlobalScoreResponse = this._onGlobalScoreResponse.bind(this);
     //
@@ -308,7 +304,7 @@ class ScoresState {
 
   enter() {
     const displayedLocalScore = Object.assign({}, this.localScore);
-    const displayedGlobalScore = { red: 0, blue: 0, pink: 0, yellow: 0 };
+    const displayedGlobalScore = { red: '0%', blue: '0%', pink: '0%', yellow: '0%' };
 
     this.view = new ScoresView(template, {
       showGlobalScore: false,
@@ -321,7 +317,7 @@ class ScoresState {
 
     this.view.render();
     this.view.show();
-    this.view.appendTo(this.experience.view.$el);
+    this.view.appendTo(this.experience.view.getStateContainer());
 
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
@@ -360,6 +356,7 @@ class ScoresState {
 
   _onGlobalScoreResponse(globalScore) {
     // populate renderer with globalScore
+    console.log(globalScore);
     this.globalScore = globalScore;
     this.renderer.globalScore = globalScore.fakeResults;
 
@@ -387,8 +384,9 @@ class ScoresState {
       this.view.content.localScore[color] = remainValue;
       // update global score
       if (this.globalScore) {
-        const transferedValue = Math.round(this.globalScore.fakeResults[color] * value);
-        this.view.content.globalScore[color] = transferedValue;
+        const transferedValue = this.globalScore.fakeResults[color] * value;
+        const percent = transferedValue / this.globalScore.total * 100;
+        this.view.content.globalScore[color] = `${percent.toFixed(2)}%`;
       }
 
       this.view.render(`.score.${color} p.local`);

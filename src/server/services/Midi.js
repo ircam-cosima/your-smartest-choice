@@ -23,6 +23,10 @@ class Midi extends Service {
     for (let key in this.options) {
       const port = midi.MidiInOpen(this.options[key], this._onMessage(key));
       this.ports.set(key, port);
+
+      console.log('----------------------------------------------------------');
+      console.log(`Listening midi interface: ${key} (${this.options[key]})`);
+      console.log('----------------------------------------------------------');
     }
   }
 

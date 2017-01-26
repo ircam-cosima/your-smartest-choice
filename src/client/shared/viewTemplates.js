@@ -125,7 +125,7 @@ export default {
             <br />
             <b><%= globals.appName %></b>
             -->
-            Your smartest choice
+            Your Smartest<br />Choice
           </p>
       </div>
       <div class="section-bottom flex-middle">

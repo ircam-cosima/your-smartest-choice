@@ -13,10 +13,10 @@ class GroupFilter extends Service {
   constructor() {
     super(SERVICE_ID, false);
 
-    this._color = null;
+    this._group = null;
     this._listeners = new Set();
     this._zones = [];
-    this._zoneColorMap = new Map();
+    this._zoneGroupMap = new Map();
 
     const defaults = {
       directions: {},
@@ -35,8 +35,8 @@ class GroupFilter extends Service {
     // define zones in degrees for each instruments
     const directions = this.options.directions;
 
-    for (let color in directions) {
-      const angle = directions[color];
+    for (let group in directions) {
+      const angle = directions[group];
       let startAngle = angle - 45;
       let endAngle = angle + 45;
 
@@ -49,7 +49,7 @@ class GroupFilter extends Service {
       const zone = [startAngle, endAngle];
 
       this._zones.push(zone);
-      this._zoneColorMap.set(zone, color);
+      this._zoneGroupMap.set(zone, group);
     }
   }
 
@@ -69,6 +69,7 @@ class GroupFilter extends Service {
 
   _onOrientation(data) {
     const compass = data[0]; // degress
+    const group = this._group;
 
     for (let i = 0; i < this._zones.length; i++) {
       const zone = this._zones[i];
@@ -76,21 +77,24 @@ class GroupFilter extends Service {
       const end = zone[1];
 
       if (start < end && compass >= start && compass < end) {
-        this._color = this._zoneColorMap.get(zone);
+        this._group = this._zoneGroupMap.get(zone);
         break;
       }
 
       if (start > end && (compass >= start || compass < end)) {
-        this._color = this._zoneColorMap.get(zone);
+        this._group = this._zoneGroupMap.get(zone);
         break;
       }
     }
 
-    this._propagate(compass, this._color);
+    this._propagate('compass', compass);
+
+    if (group !== this._group)
+      this._propagate('group', this._group);
   }
 
-  _propagate(compassValue, color) {
-    this._listeners.forEach(callback => callback(compassValue, color));
+  _propagate(channel, ...args) {
+    this._listeners.forEach(callback => callback(channel, ...args));
   }
 
   addListener(callback) {
@@ -105,14 +109,14 @@ class GroupFilter extends Service {
    * Return the current state among `'blue', 'pink', 'red', 'yellow'`.
    */
   getState() {
-    return this._color;
+    return this._group;
   }
 
   /**
    * Test a state against the current one.
    */
   test(value) {
-    return (value === this._color);
+    return (value === this._group);
   }
 }
 

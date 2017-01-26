@@ -1,13 +1,14 @@
 import * as soundworks from 'soundworks/client';
-import PlayerRenderer from './PlayerRenderer';
 import SharedSynth from './audio/SharedSynth';
+import SharedVisuals from './renderers/SharedVisuals';
 
 // config
-import spriteConfig from '../shared/spriteConfig';
-// @todo - this should be loaded instead
+import spriteConfig from '../../../data/sprite-config.json';
 import sharedVisualsConfig from '../../../data/shared-visuals-config.json';
 import sharedSynthConfig from '../../../data/shared-synth-config.json';
 import areaConfig from '../../../data/area-config.json';
+import killTheBalloonsConfig from '../../../data/kill-the-balloons-config.json';
+import avoidTheRainConfig from '../../../data/avoid-the-rain-config.json';
 
 // states
 import WaitState from './states/WaitState';
@@ -21,8 +22,6 @@ import EndState from './states/EndState';
 
 const audioContext = soundworks.audioContext;
 const client = soundworks.client;
-
-const viewTemplate = ``;
 
 const states = {
   wait: WaitState,
@@ -39,6 +38,22 @@ const globalState = {
   score: { red: 0, blue: 0, pink: 0, yellow: 0 },
 };
 
+const viewTemplate = `
+  <canvas class="background"></canvas>
+  <div id="state-container" class="foreground"></div>
+`;
+
+class PlayerView extends soundworks.CanvasView {
+  onRender() {
+    super.onRender();
+    this.$stateContainer = this.$el.querySelector('#state-container');
+  }
+
+  getStateContainer() {
+    return this.$stateContainer;
+  }
+}
+
 class PlayerExperience extends soundworks.Experience {
   constructor(assetsDomain) {
     super();
@@ -48,12 +63,39 @@ class PlayerExperience extends soundworks.Experience {
     this.sharedVisualsConfig = sharedVisualsConfig;
     this.spriteConfig = spriteConfig;
     this.areaConfig = areaConfig;
+    this.killTheBalloonsConfig = killTheBalloonsConfig;
+    this.avoidTheRainConfig = avoidTheRainConfig;
+
+    // -------------------------------------------
+    // prepare paths for audio files
+    // -------------------------------------------
+
+    const sharedSynthFiles = sharedSynthConfig.map((entry) => {
+      return `sounds/shared-synth/${entry.filename}`;
+    });
+
+    const killTheBalloonsFiles = killTheBalloonsConfig.files.map((filename) => {
+      return `sounds/kill-the-balloons/${filename}`;
+    });
+
+    const avoidTheRainSines = avoidTheRainConfig.sines.map(filename => {
+      return `sounds/avoid-the-rain/${filename}`;
+    });
+
+    const avoidTheRainGlitches = avoidTheRainConfig.glitches.map(filename => {
+      return `sounds/avoid-the-rain/${filename}`;
+    });
+
+    // -------------------------------------------
 
     const audioFiles = {
-      'shared-synth': sharedSynthConfig.map((entry) => `sounds/shared-synth/${entry.filename}`),
+      'shared-synth': sharedSynthFiles,
+      'kill-the-balloons': killTheBalloonsFiles,
+      'avoid-the-rain:sines': avoidTheRainSines,
+      'avoid-the-rain:glitches': avoidTheRainGlitches,
     };
 
-    this.platform = this.require('platform', { features: ['web-audio'] });
+    this.platform = this.require('platform', { features: ['web-audio', 'wake-lock'] });
     this.checkin = this.require('checkin', { showDialog: false });
     this.audioBufferManager = this.require('audio-buffer-manager', {
       assetsDomain: assetsDomain,
@@ -85,22 +127,31 @@ class PlayerExperience extends soundworks.Experience {
     this._onCompassUpdate = this._onCompassUpdate.bind(this);
 
     this._accelerationListeners = new Set();
-    this._compassListeners = new Set();
+    this._compassListeners = {};
   }
 
   init() {
     // populate spriteConfig with the sprite images
-    this.spriteConfig.groups.blue.image = this.imageManager.get('spriteBlue');
-    this.spriteConfig.groups.pink.image = this.imageManager.get('spritePink');
-    this.spriteConfig.groups.yellow.image = this.imageManager.get('spriteYellow');
-    this.spriteConfig.groups.red.image = this.imageManager.get('spriteRed');
+    this.spriteConfig.groups.blue.image = this.imageManager.getAsCanvas('spriteBlue');
+    this.spriteConfig.groups.pink.image = this.imageManager.getAsCanvas('spritePink');
+    this.spriteConfig.groups.yellow.image = this.imageManager.getAsCanvas('spriteYellow');
+    this.spriteConfig.groups.red.image = this.imageManager.getAsCanvas('spriteRed');
+
+    this.spriteConfig.groups.blue.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spriteBlue');
+    this.spriteConfig.groups.pink.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spritePink');
+    this.spriteConfig.groups.yellow.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spriteYellow');
+    this.spriteConfig.groups.red.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spriteRed');
+
     this.spriteConfig.colors = Object.keys(this.spriteConfig.groups);
 
     // initialize the view
     this.viewTemplate = viewTemplate;
     this.viewContent = {};
-    this.viewCtor = soundworks.View;
-    this.viewOptions = { preservePixelRatio: true };
+    this.viewCtor = PlayerView;
+    this.viewOptions = {
+      preservePixelRatio: false,
+      ratios: { '#state-container': 1 },
+    };
     this.viewEvents = {};
     this.view = this.createView();
   }
@@ -113,19 +164,45 @@ class PlayerExperience extends soundworks.Experience {
 
     this.show();
 
-    // global synth and visuals (Huihui controlled)
-    const sharedSynthBuffers = this.audioBufferManager.get('shared-synth');
-    this.sharedSynth = new SharedSynth(this.sharedSynthConfig, sharedSynthBuffers, this.groupFilter);
-    // this.sharedVisuals = new SharedVisuals(config, this.view, this.groupFilter);
+    // global view
+    this.view.setPreRender((ctx, dt, width, height) => {
+      ctx.clearRect(0, 0, width, height);
+    });
 
+    // global synth and visuals (Huihui controlled)
+    this.sharedSynth = new SharedSynth(
+      this.sharedSynthConfig,
+      this.audioBufferManager.get('shared-synth'),
+      this.groupFilter,
+      this.getAudioDestination()
+    );
+
+    this.sharedVisuals = new SharedVisuals(this.spriteConfig.groups);
+
+    this.view.addRenderer(this.sharedVisuals);
+
+    // @todo - revise all this, this is far from really efficient
     this.receive('note:on', (pitch) => {
-      this.sharedSynth.trigger(pitch);
-      // this.sharedVisuals.trigger(pitch);
+      const res = this.sharedSynth.noteOn(pitch);
+
+      if (res !== null)
+        this.sharedVisuals.trigger(res.group, res.sustained, res.duration);
     });
 
     this.receive('note:off', (pitch) => {
-      this.sharedSynth.stop(pitch);
-      // this.sharedVisuals.stop(pitch);
+      const res = this.sharedSynth.noteOff(pitch);
+
+      if (res !== null)
+        this.sharedVisuals.stop(res.group);
+    });
+
+    this.addCompassListener('group', (group) => {
+      const res = this.sharedSynth.updateGroup(group);
+
+      if (res !== null)
+        this.sharedVisuals.trigger(res.group, res.sustained, res.duration);
+      else
+        this.sharedVisuals.kill();
     });
 
     // motion input
@@ -134,13 +211,17 @@ class PlayerExperience extends soundworks.Experience {
     else
       console.warn('@todo: no acceleration');
 
-    this.groupFilter.addListener(this._onCompassUpdate);
     // state of the application
+    this.groupFilter.addListener(this._onCompassUpdate);
     this.sharedParams.addParamListener('state', this._setState);
   }
 
+  getAudioDestination() {
+    return audioContext.destination;
+  }
+
   _setState(name) {
-    console.log('%cstate: ' + name, 'color:green');
+    // console.log('%cstate: ' + name, 'color:green');
     const ctor = states[name];
 
     if (!ctor)
@@ -165,20 +246,24 @@ class PlayerExperience extends soundworks.Experience {
   }
 
   _onAcceleration(data) {
-    console.log(data);
     this._accelerationListeners.forEach(callback => callback(data));
   }
 
-  addCompassListener(callback) {
-    this._compassListeners.add(callback);
+  addCompassListener(channel, callback) {
+    if (!this._compassListeners[channel])
+      this._compassListeners[channel] = new Set();
+
+    this._compassListeners[channel].add(callback);
   }
 
-  removeCompassListener(callback) {
-    this._compassListeners.delete(callback);
+  removeCompassListener(channel, callback) {
+    if (this._compassListeners[channel])
+      this._compassListeners[channel].delete(callback);
   }
 
-  _onCompassUpdate(angle, color) {
-    this._compassListeners.forEach(callback => callback(angle, color));
+  _onCompassUpdate(channel, ...args) {
+    if (this._compassListeners[channel])
+      this._compassListeners[channel].forEach(callback => callback(...args));
   }
 }
 

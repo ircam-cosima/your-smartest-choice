@@ -1,13 +1,21 @@
 import { CanvasView, Renderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
+import KillTheBalloonsSynth from '../audio/KillTheBalloonsSynth';
 
 const template = `
   <canvas class="background"></canvas>
   <div class="foreground">
-    <div class="section-top flex-middle"></div>
+    <div class="section-top">
+      <div class="score">
+        <p class="blue"><%= score.blue %></p>
+        <p class="pink"><%= score.pink %></p>
+        <p class="yellow"><%= score.yellow %></p>
+        <p class="red"><%= score.red %></p>
+      </div>
+    </div>
     <div class="section-center flex-center">
       <% if (state === 'intro') { %>
-        <p>Stage 1<br />Explode the balloons!</p>
+        <p>Level 1<br />Explode the balloons!</p>
       <% } else if (state === 'go') { %>
         <p>Go!</p>
       <% } %>
@@ -15,6 +23,23 @@ const template = `
     <div class="section-bottom flex-middle"></div>
   </div>
 `;
+
+class KillTheBalloonsView extends CanvasView {
+  onRender() {
+    super.onRender();
+    this.$canvas = this.$el.querySelector('canvas');
+    this.$score = this.$el.querySelector('.score');
+  }
+
+  onResize(...args) {
+    super.onResize(...args);
+    this.canvasBoundingClientRect = this.$canvas.getBoundingClientRect();
+  }
+
+  hideScore() {
+    this.$score.classList.add('hidden');
+  }
+}
 
 class RisingBalloon extends Balloon {
   constructor(...args) {
@@ -28,18 +53,6 @@ class RisingBalloon extends Balloon {
     this.y += (this.vy * dt);
 
     super.update(dt);
-  }
-}
-
-class KillTheBalloonsView extends CanvasView {
-  onRender() {
-    super.onRender();
-    this.$canvas = this.$el.querySelector('canvas');
-  }
-
-  onResize(...args) {
-    super.onResize(...args);
-    this.canvasBoundingClientRect = this.$canvas.getBoundingClientRect();
   }
 }
 
@@ -58,19 +71,15 @@ class KillTheBalloonsRenderer extends Renderer {
       this.balloons[i] = [];
   }
 
-  init() {
-
-  }
-
   spawnBalloon() {
     const config = this.spriteConfig;
     const colorIndex = Math.floor(Math.random() * config.colors.length);
     const color = config.colors[colorIndex];
 
-    const image = config.groups[color].image;
+    const image = config.groups[color].halfSizeImage;
     const clipPositions = config.groups[color].clipPositions;
-    const clipWidth = config.clipSize.width;
-    const clipHeight = config.clipSize.height;
+    const clipWidth = Math.floor(config.clipSize.width / 2);
+    const clipHeight = Math.floor(config.clipSize.height / 2);
     const refreshRate = config.animationRate;
     const size = Math.min(this.canvasWidth, this.canvasHeight) * config.smallSizeRatio;
     const x = Math.random() * this.canvasWidth;
@@ -144,13 +153,21 @@ class KillTheBalloonsState {
     this._onExploded = this._onExploded.bind(this);
     this._onStart = this._onStart.bind(this);
     this._onTouchStart = this._onTouchStart.bind(this);
+    this._onSamplesSet = this._onSamplesSet.bind(this);
 
     this.renderer = new KillTheBalloonsRenderer(this.experience.spriteConfig, this._onExploded);
+
+    this.synth = new KillTheBalloonsSynth(
+      this.experience.killTheBalloonsConfig.sets,
+      this.experience.audioBufferManager.get('kill-the-balloons'),
+      this.experience.getAudioDestination()
+    );
   }
 
   enter() {
     this.view = new KillTheBalloonsView(template, {
       state: 'intro', // 'go' || 'game'
+      score: Object.assign({}, this.globalState.score),
     }, {
       touchstart: this._onTouchStart,
     }, {
@@ -159,7 +176,7 @@ class KillTheBalloonsState {
 
     this.view.render();
     this.view.show();
-    this.view.appendTo(this.experience.view.$el);
+    this.view.appendTo(this.experience.view.getStateContainer());
 
     const goDuration = 1;
     let goTime = 0;
@@ -182,6 +199,7 @@ class KillTheBalloonsState {
 
     const sharedParams = this.experience.sharedParams;
     sharedParams.addParamListener('killTheBalloons:start', this._onStart);
+    sharedParams.addParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.addParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
   }
 
@@ -190,11 +208,13 @@ class KillTheBalloonsState {
 
     this.view.$el.classList.remove('foreground');
     this.view.$el.classList.add('background');
+    this.view.hideScore();
 
     this.renderer.explodeAll();
 
     const sharedParams = this.experience.sharedParams;
     sharedParams.removeParamListener('killTheBalloons:start', this._onStart);
+    sharedParams.removeParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.removeParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
   }
 
@@ -222,7 +242,8 @@ class KillTheBalloonsState {
     this.renderer.spawnBalloon();
 
     const halfMaxSpawn = this._maxSpawnInterval / 2;
-    const delay = halfMaxSpawn + halfMaxSpawn * Math.random(); // seconds
+    // min delay to 50ms
+    const delay = Math.max(0.05, halfMaxSpawn + halfMaxSpawn * Math.random()); // seconds
     this._spawnTimeout = setTimeout(this._spawnBalloon, delay * 1000);
   }
 
@@ -256,11 +277,19 @@ class KillTheBalloonsState {
   }
 
   _updateScore(color) {
+    // update model
     this.globalState.score[color] += 1;
+    // update view model
+    this.view.content.score[color] += 1;
+    this.view.render('.score');
   }
 
   _triggerSample(color, x, y) {
-    // this.experience.sharedSynth.trigger
+    this.synth.trigger(color);
+  }
+
+  _onSamplesSet(value) {
+    this.synth.setSamplesSetIndex(value);
   }
 }
 
