@@ -95,7 +95,8 @@ class PlayerExperience extends soundworks.Experience {
       'avoid-the-rain:glitches': avoidTheRainGlitches,
     };
 
-    this.platform = this.require('platform', { features: ['web-audio', 'wake-lock'] });
+    // this.platform = this.require('platform', { features: ['web-audio', 'wake-lock'] });
+    this.platform = this.require('platform', { features: ['web-audio'] });
     this.checkin = this.require('checkin', { showDialog: false });
     this.audioBufferManager = this.require('audio-buffer-manager', {
       assetsDomain: assetsDomain,
@@ -125,6 +126,7 @@ class PlayerExperience extends soundworks.Experience {
     this._setState = this._setState.bind(this);
     this._onAcceleration = this._onAcceleration.bind(this);
     this._onCompassUpdate = this._onCompassUpdate.bind(this);
+    this._setVolume = this._setVolume.bind(this);
 
     this._accelerationListeners = new Set();
     this._compassListeners = {};
@@ -163,6 +165,12 @@ class PlayerExperience extends soundworks.Experience {
       this.init();
 
     this.show();
+
+    // master audio
+    this.master = audioContext.createGain();
+    this.master.connect(audioContext.destination);
+    this.master.gain.value = 1;
+    this.master.gain.setValueAtTime(1, audioContext.currentTime);
 
     // global view
     this.view.setPreRender((ctx, dt, width, height) => {
@@ -213,11 +221,16 @@ class PlayerExperience extends soundworks.Experience {
 
     // state of the application
     this.groupFilter.addListener(this._onCompassUpdate);
-    this.sharedParams.addParamListener('state', this._setState);
+    this.sharedParams.addParamListener('global:state', this._setState);
+    this.sharedParams.addParamListener('global:volume', this._setVolume);
   }
 
   getAudioDestination() {
-    return audioContext.destination;
+    return this.master;
+  }
+
+  _setVolume(value) {
+    this.master.gain.value = value;
   }
 
   _setState(name) {

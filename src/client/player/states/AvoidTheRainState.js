@@ -13,11 +13,10 @@ const template = `
         <p class="red"><%= score.red %></p>
       </div>
     </div>
-    <div class="section-center flex-center">
-      <% if (state === 'intro') { %>
-        <p>Level 2<br />Avoid the rain drops!</p>
-      <% } else if (state === 'go') { %>
-        <p>Go!</p>
+    <div class="section-center">
+      <% if (showInstructions === true) { %>
+        <p class="align-center big">Level 2</p>
+        <p class="align-center soft-blink">Tilt your phone to avoid the rain drops!</p>
       <% } %>
     </div>
     <div class="section-bottom flex-middle"></div>
@@ -255,7 +254,6 @@ class AvoidTheRainState {
 
     this._onResize = this._onResize.bind(this);
     this._spawnBalloon = this._spawnBalloon.bind(this);
-    this._onStart = this._onStart.bind(this);
     this._updateBalloonRadius = this._updateBalloonRadius.bind(this);
     this._onAccelerationInput = this._onAccelerationInput.bind(this);
     this._toggleRain = this._toggleRain.bind(this);
@@ -278,7 +276,7 @@ class AvoidTheRainState {
     viewport.addResizeListener(this._onResize);
 
     this.view = new AvoidTheRainView(template, {
-      state: 'intro',
+      showInstructions: true,
       score: Object.assign({}, this.globalState.score),
     }, {}, {
       className: ['avoid-the-rain-state', 'foreground'],
@@ -288,18 +286,17 @@ class AvoidTheRainState {
     this.view.show();
     this.view.appendTo(this.experience.view.getStateContainer());
 
-    const goDuration = 1;
-    let goTime = 0;
+    const instructionsDuration = 10;
+    let instructionsTime = 0;
 
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
 
-      //
-      if (this.view.content.state === 'go') {
-        goTime += dt;
+      if (this.view.content.showInstructions === true) {
+        instructionsTime += dt;
 
-        if (goTime > goDuration) {
-          this.view.content.state = 'game';
+        if (instructionsTime > instructionsDuration) {
+          this.view.content.showInstructions = false;
           this.view.render('.section-center');
         }
       }
@@ -320,10 +317,12 @@ class AvoidTheRainState {
     sharedParams.addParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.addParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     // call this at the end to be sure all other params are set
-    sharedParams.addParamListener('avoidTheRain:start', this._onStart);
+    // sharedParams.addParamListener('avoidTheRain:start', this._onStart);
     sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
     this.experience.addAccelerationListener(this._onAccelerationInput);
+
+    this._spawnBalloon();
   }
 
   exit() {
@@ -345,19 +344,10 @@ class AvoidTheRainState {
     sharedParams.removeParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     sharedParams.removeParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
     sharedParams.removeParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
-    sharedParams.removeParamListener('avoidTheRain:start', this._onStart);
+    // sharedParams.removeParamListener('avoidTheRain:start', this._onStart);
     sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
     // stop listening motion-input
     this.experience.removeAccelerationListener(this._onAccelerationInput);
-  }
-
-  _onStart(value) {
-    if (value === 'start') {
-      this.view.content.state = 'go';
-      this.view.render('.section-center');
-
-      this._spawnBalloon();
-    }
   }
 
   _onExploded() {

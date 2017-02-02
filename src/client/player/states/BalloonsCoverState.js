@@ -100,10 +100,18 @@ class BalloonCoverState {
     this.experience = experience;
     this.globalState = globalState;
 
+    const numBarCover = 1;
+
+    this._state = 'cover';
+    this._coverTime = 0;
+    this._coverDuration = 2.4 * numBarCover; // seconds
+    this._maxBalloons = 500;
+    // this._explodeInterval = 1;
+    // this._explodeTime = 0;
+
     this.renderer = new BalloonCoverRenderer(experience.spriteConfig);
-    this._updateNumberBallons = this._updateNumberBallons.bind(this);
+
     this._explodeBalloons = this._explodeBalloons.bind(this);
-    this._toggleBackground = this._toggleBackground.bind(this);
   }
 
   enter() {
@@ -117,13 +125,40 @@ class BalloonCoverState {
 
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
+
+      // cover
+      if (this._state === 'cover') {
+        this._coverTime += dt;
+
+        if (this._coverTime <= this._coverDuration) {
+          const numBalloons = Math.ceil(this._maxBalloons * this._coverTime / this._coverDuration);
+          this._updateNumberBalloons(numBalloons);
+        } else {
+          this._toggleBackground(true);
+          this._state = 'explode';
+        }
+      }
+      // } else if (this._state === 'explode') {
+      //   this._explodeTime += dt;
+
+      //   if (this._explodeTime >= this._explodeInterval) {
+      //     const index = Math.floor(colors.length * Math.random());
+      //     const color = colors[index];
+      //     colors.splice(index, 1);
+
+      //     this._explodeBalloons(color);
+      //     this._explodeTime = 0;
+
+      //     if (colors.length === 0)
+      //       this._state = null;
+      //   }
+      // }
     });
 
     this.view.addRenderer(this.renderer);
 
-    this.experience.sharedParams.addParamListener('balloonCover:number', this._updateNumberBallons);
-    this.experience.sharedParams.addParamListener('balloonCover:toggleBackground', this._toggleBackground);
-    this.experience.sharedParams.addParamListener('balloonCover:explode', this._explodeBalloons);
+    const sharedParams = this.experience.sharedParams;
+    sharedParams.addParamListener('balloonCover:explode', this._explodeBalloons);
   }
 
   exit() {
@@ -132,17 +167,14 @@ class BalloonCoverState {
 
     this.view.removeRenderer(this.renderer);
     this.view.remove();
-
-    this.experience.sharedParams.removeParamListener('balloonCover:number', this._updateNumberBallons);
-    this.experience.sharedParams.removeParamListener('balloonCover:toggleBackground', this._toggleBackground);
-    this.experience.sharedParams.removeParamListener('balloonCover:explode', this._explodeBalloons);
   }
 
   _explodeBalloons(color) {
-    this.renderer.explodeBalloons(color);
+    if (this._state === 'explode')
+      this.renderer.explodeBalloons(color);
   }
 
-  _updateNumberBallons(value) {
+  _updateNumberBalloons(value) {
     if (this.renderer.length < value) {
       while (this.renderer.length < value)
         this.renderer.addBalloon();
@@ -153,7 +185,7 @@ class BalloonCoverState {
   }
 
   _toggleBackground(value) {
-    if (value === 'show') {
+    if (value === true) {
       const img = this.experience.sharedVisualsConfig.gifs.balloonCoverBackground;
       const $container = this.view.$el;
       this.view.$el.style.background = `url(${img}) 50% 50% no-repeat`;

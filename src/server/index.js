@@ -14,12 +14,11 @@ let config = null;
 
 switch(process.env.ENV) {
   case 'production':
-  default:
     config = productionConfig;
     break;
-  // default: // @todo - don't forget to uncomment that
-  //   config = defaultConfig;
-  //   break;
+  default: // @todo - don't forget to uncomment that
+    config = defaultConfig;
+    break;
 }
 
 // configure express environment ('production' enables cache systems)
@@ -48,21 +47,16 @@ const winnersOrder = ['pink', 'red', 'blue', 'yellow'];
 
 const sharedParams = soundworks.server.require('shared-params');
 
-// controle state of the application
-sharedParams.addEnum('state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
+// globals
+sharedParams.addEnum('global:state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
+sharedParams.addNumber('global:volume', 'Volume', 0, 1, 0.001, 1);
 
-// balloon cover state controls
-sharedParams.addNumber('balloonCover:number', 'balloonCover:number', 0, 500, 1, 0);
-sharedParams.addEnum('balloonCover:toggleBackground', 'balloonCover:toggleBackground', ['hide', 'show'], 'hide');
-sharedParams.addEnum('balloonCover:explode', 'balloonCover:explode', ['blue', 'pink', 'yellow', 'red']);
-
+sharedParams.addEnum('balloonCover:explode', 'balloonCover:explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 // kill the balloons state controls
-sharedParams.addEnum('killTheBalloons:start', 'killTheBalloons:start', ['stop', 'start'], 'stop');
-sharedParams.addNumber('killTheBalloons:spawnInterval', 'killTheBalloons:spawnInterval', 0, 1, 0.001, 1);
+sharedParams.addNumber('killTheBalloons:spawnInterval', 'killTheBalloons:spawnInterval', 0, 10, 0.001, 5);
 sharedParams.addEnum('killTheBalloons:samplesSet', 'killTheBalloons:samplesSet', [0, 1, 2, 3, 4], 0);
 
 // avoid the rain state controls
-sharedParams.addEnum('avoidTheRain:start', 'avoidTheRain:start', ['stop', 'start'], 'stop');
 sharedParams.addEnum('avoidTheRain:harmony', 'avoidTheRain:harmony', [
   'M15:0', 'M15:1', 'M15:2', 'M15:3',
   'M16:0', 'M16:1', 'M16:2', 'M16:3',

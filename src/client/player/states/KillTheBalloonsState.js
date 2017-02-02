@@ -13,11 +13,10 @@ const template = `
         <p class="red"><%= score.red %></p>
       </div>
     </div>
-    <div class="section-center flex-center">
-      <% if (state === 'intro') { %>
-        <p>Level 1<br />Explode the balloons!</p>
-      <% } else if (state === 'go') { %>
-        <p>Go!</p>
+    <div class="section-center">
+      <% if (showInstructions) { %>
+        <p class="align-center big">Level 1</p>
+        <p class="align-center soft-blink">Click the balloons to explode them!</p>
       <% } %>
     </div>
     <div class="section-bottom flex-middle"></div>
@@ -151,7 +150,6 @@ class KillTheBalloonsState {
     this._maxSpawnInterval = null;
 
     this._onExploded = this._onExploded.bind(this);
-    this._onStart = this._onStart.bind(this);
     this._onTouchStart = this._onTouchStart.bind(this);
     this._onSamplesSet = this._onSamplesSet.bind(this);
 
@@ -166,7 +164,7 @@ class KillTheBalloonsState {
 
   enter() {
     this.view = new KillTheBalloonsView(template, {
-      state: 'intro', // 'go' || 'game'
+      showInstructions: true,
       score: Object.assign({}, this.globalState.score),
     }, {
       touchstart: this._onTouchStart,
@@ -178,29 +176,18 @@ class KillTheBalloonsState {
     this.view.show();
     this.view.appendTo(this.experience.view.getStateContainer());
 
-    const goDuration = 1;
-    let goTime = 0;
-
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
-
-      // update view
-      if (this.view.content.state === 'go') {
-        goTime += dt;
-
-        if (goTime > goDuration) {
-          this.view.content.state = 'game';
-          this.view.render('.section-center');
-        }
-      }
     });
 
     this.view.addRenderer(this.renderer);
 
     const sharedParams = this.experience.sharedParams;
-    sharedParams.addParamListener('killTheBalloons:start', this._onStart);
     sharedParams.addParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.addParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
+
+    // init spawn
+    this._spawnBalloon();
   }
 
   exit() {
@@ -213,20 +200,8 @@ class KillTheBalloonsState {
     this.renderer.explodeAll();
 
     const sharedParams = this.experience.sharedParams;
-    sharedParams.removeParamListener('killTheBalloons:start', this._onStart);
     sharedParams.removeParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.removeParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
-  }
-
-  _onStart(value) {
-    if (value === 'start') {
-      this.view.content.state = 'go';
-      this.view.render('.section-center');
-
-      // prevent double lauch
-      if (this._spawnTimeout === null)
-        this._spawnBalloon();
-    }
   }
 
   _onExploded() {
@@ -277,6 +252,11 @@ class KillTheBalloonsState {
   }
 
   _updateScore(color) {
+    if (this.view.content.showInstructions === true) {
+      this.view.content.showInstructions = false;
+      this.view.render('.section-center');
+    }
+
     // update model
     this.globalState.score[color] += 1;
     // update view model

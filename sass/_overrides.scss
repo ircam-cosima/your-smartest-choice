@@ -1,4 +1,12 @@
+#service-platform .section-bottom p {
+  font-size: 1.4rem;
+}
+
 // Entry point for application specific styles
+
+.align-center {
+  text-align: center;
+}
 
 .kill-the-balloons-state,
 .avoid-the-rain-state {
@@ -14,12 +22,11 @@
     }
 
     p {
-      font-size: 18px;
-      line-height: 20px;
+      font-size: 26px;
+      line-height: 30px;
       width: 25%;
       float: left;
       text-align: center;
-      font-weight: bold;
 
       &.blue { color: lighten(#4770c4, 10%); }
       &.pink { color: #ff0098; }

@@ -128,7 +128,7 @@ export default {
             Your Smartest<br />Choice
           </p>
       </div>
-      <div class="section-bottom flex-middle">
+      <div class="section-bottom flex-center">
         <p class="small soft-blink"><%= instructions %></p>
       </div>
     <% } %>
