@@ -39,5 +39,6 @@ Kill the Balloons
 - control balloon size diversity (ok)
 
 Avoid the rain
-- explode balloons on harmony change
+- add volume for sines (ok)
+- explode balloons on harmony change 
 - fix segment engine

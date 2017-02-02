@@ -16,8 +16,8 @@ class ControllerExperience extends BasicSharedController {
     this.setGuiOptions('killTheBalloons:samplesSet', { type: 'buttons' });
 
     // avoid the rain
-    this.setGuiOptions('avoidTheRain:start', { type: 'buttons' });
     this.setGuiOptions('avoidTheRain:balloonRadius', { type: 'slider', size: 'large' });
+    this.setGuiOptions('avoidTheRain:sineVolume', { type: 'slider', size: 'large' });
     this.setGuiOptions('avoidTheRain:toggleRain', { type: 'buttons' });
     this.setGuiOptions('avoidTheRain:spawnInterval', { type: 'slider', size: 'large' });
 

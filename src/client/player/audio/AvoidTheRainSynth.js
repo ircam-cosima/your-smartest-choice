@@ -40,8 +40,13 @@ class AvoidTheRainSynth {
 
     const now = audioContext.currentTime;
 
+    this.sineMaster = audioContext.createGain();
+    this.sineMaster.connect(this.output);
+    this.sineMaster.gain.value = 1;
+    this.sineMaster.gain.setValueAtTime(1, now);
+
     this.env = audioContext.createGain();
-    this.env.connect(this.output);
+    this.env.connect(this.sineMaster);
     this.env.gain.value = 0;
     this.env.gain.setValueAtTime(0, now);
 
@@ -56,6 +61,10 @@ class AvoidTheRainSynth {
 
   setNextHarmony(value) {
     this.nextHarmony = value;
+  }
+
+  setSineMaster(value) {
+    this.sineMaster.gain.value = value;
   }
 
   getSineResampling() {

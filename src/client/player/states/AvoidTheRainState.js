@@ -261,6 +261,7 @@ class AvoidTheRainState {
     this._onRainHit = this._onRainHit.bind(this);
     this._onExploded = this._onExploded.bind(this);
     this._onHarmonyUpdate = this._onHarmonyUpdate.bind(this);
+    this._onSineVolumeUpdate = this._onSineVolumeUpdate.bind(this);
 
     this.renderer = new AvoidTheRainRenderer(this.experience.spriteConfig, this._onRainHit, this._onExploded);
 
@@ -316,6 +317,7 @@ class AvoidTheRainState {
     sharedParams.addParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
     sharedParams.addParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.addParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
+    sharedParams.addParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
     // call this at the end to be sure all other params are set
     // sharedParams.addParamListener('avoidTheRain:start', this._onStart);
     sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
@@ -344,6 +346,7 @@ class AvoidTheRainState {
     sharedParams.removeParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     sharedParams.removeParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
     sharedParams.removeParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
+    sharedParams.removeParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
     // sharedParams.removeParamListener('avoidTheRain:start', this._onStart);
     sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
     // stop listening motion-input
@@ -353,6 +356,10 @@ class AvoidTheRainState {
   _onExploded() {
     this.view.removeRenderer(this.renderer);
     this.view.remove();
+  }
+
+  _onSineVolumeUpdate(value) {
+    this.synth.setSineMaster(value);
   }
 
   _updateBalloonRadius(value) {
@@ -398,7 +405,6 @@ class AvoidTheRainState {
   }
 
   _toggleRain(value) {
-
     if (value === 'start' &&
         this.view.content.state !== 'intro' &&
         this.spawnTimeout === null
