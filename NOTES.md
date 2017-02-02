@@ -32,7 +32,7 @@ Compass
 - fix color order in compass (ok)
 
 BalloonCover
-- put back explode buttons
+- put back explode buttons (ok)
 
 Kill the Balloons
 - fix spawn interval

@@ -211,15 +211,21 @@ class KillTheBalloonsState {
 
   _updateMaxSpawn(value) {
     this._maxSpawnInterval = value;
+
+    clearTimeout(this._spawnTimeout);
+    this._spawnTimeout = setTimeout(this._spawnBalloon, this._getSpawnDelay());
   }
 
   _spawnBalloon() {
     this.renderer.spawnBalloon();
+    this._spawnTimeout = setTimeout(this._spawnBalloon, this._getSpawnDelay());
+  }
 
+  _getSpawnDelay() {
     const halfMaxSpawn = this._maxSpawnInterval / 2;
     // min delay to 50ms
     const delay = Math.max(0.05, halfMaxSpawn + halfMaxSpawn * Math.random()); // seconds
-    this._spawnTimeout = setTimeout(this._spawnBalloon, delay * 1000);
+    return delay * 1000;
   }
 
   _onTouchStart(e) {
