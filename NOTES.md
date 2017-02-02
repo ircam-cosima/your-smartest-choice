@@ -35,8 +35,8 @@ BalloonCover
 - put back explode buttons (ok)
 
 Kill the Balloons
-- fix spawn interval
-- control balloon size diversity
+- fix spawn interval (ok)
+- control balloon size diversity (ok)
 
 Avoid the rain
 - explode balloons on harmony change

@@ -62,6 +62,7 @@ class KillTheBalloonsRenderer extends Renderer {
     this.spriteConfig = spriteConfig;
     this.onExploded = onExploded;
     this.isEnded = false;
+    this.sizeDiversity = 0;
 
     this.numZIndex = 3;
     this.balloons = new Array(3);
@@ -80,7 +81,9 @@ class KillTheBalloonsRenderer extends Renderer {
     const clipWidth = Math.floor(config.clipSize.width / 2);
     const clipHeight = Math.floor(config.clipSize.height / 2);
     const refreshRate = config.animationRate;
-    const size = Math.min(this.canvasWidth, this.canvasHeight) * config.smallSizeRatio;
+
+    const sizeRatio = config.smallSizeRatio + (Math.random() * 2 - 1) * 0.15 * this.sizeDiversity;
+    const size = Math.min(this.canvasWidth, this.canvasHeight) * sizeRatio;
     const x = Math.random() * this.canvasWidth;
     const y = this.canvasHeight + size;
 
@@ -144,11 +147,12 @@ class KillTheBalloonsState {
     this.experience = experience;
     this.globalState = globalState;
 
-    this._spawnBalloon = this._spawnBalloon.bind(this);
-    this._updateMaxSpawn = this._updateMaxSpawn.bind(this);
     this._spawnTimeout = null;
     this._maxSpawnInterval = null;
 
+    this._spawnBalloon = this._spawnBalloon.bind(this);
+    this._updateMaxSpawn = this._updateMaxSpawn.bind(this);
+    this._updateBalloonSizeDiversity = this._updateBalloonSizeDiversity.bind(this);
     this._onExploded = this._onExploded.bind(this);
     this._onTouchStart = this._onTouchStart.bind(this);
     this._onSamplesSet = this._onSamplesSet.bind(this);
@@ -185,6 +189,7 @@ class KillTheBalloonsState {
     const sharedParams = this.experience.sharedParams;
     sharedParams.addParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.addParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
+    sharedParams.addParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
 
     // init spawn
     this._spawnBalloon();
@@ -202,11 +207,16 @@ class KillTheBalloonsState {
     const sharedParams = this.experience.sharedParams;
     sharedParams.removeParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.removeParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
+    sharedParams.removeParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
   }
 
   _onExploded() {
     this.view.removeRenderer(this.renderer);
     this.view.remove();
+  }
+
+  _updateBalloonSizeDiversity(value) {
+    this.renderer.sizeDiversity = value;
   }
 
   _updateMaxSpawn(value) {

@@ -51,32 +51,33 @@ const sharedParams = soundworks.server.require('shared-params');
 sharedParams.addEnum('global:state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
 sharedParams.addNumber('global:volume', 'Volume', 0, 1, 0.001, 1);
 
-sharedParams.addEnum('balloonCover:explode', 'balloonCover:explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
+sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 // kill the balloons state controls
-sharedParams.addNumber('killTheBalloons:spawnInterval', 'killTheBalloons:spawnInterval', 0, 10, 0.001, 5);
-sharedParams.addEnum('killTheBalloons:samplesSet', 'killTheBalloons:samplesSet', [0, 1, 2, 3, 4], 0);
+sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawnInterval', 0, 10, 0.001, 5);
+sharedParams.addNumber('killTheBalloons:sizeDiversity', 'KillTheBalloons - sizeDiversity', 0, 1, 0.001, 0);
+sharedParams.addEnum('killTheBalloons:samplesSet', 'KillTheBalloons - samplesSet', [0, 1, 2, 3, 4], 0);
 
 // avoid the rain state controls
-sharedParams.addEnum('avoidTheRain:harmony', 'avoidTheRain:harmony', [
+sharedParams.addEnum('avoidTheRain:harmony', 'AvoidTheRain - harmony', [
   'M15:0', 'M15:1', 'M15:2', 'M15:3',
   'M16:0', 'M16:1', 'M16:2', 'M16:3',
   'M17:0', 'M17:1', 'M17:2', 'M17:3',
   'M18:0', 'M18:1', 'M18:2', 'M18:3',
 ], 'M15:0');
 
-sharedParams.addNumber('avoidTheRain:balloonRadius', 'avoidTheRain:balloonRadius', 40, 200, 1, 40);
-sharedParams.addEnum('avoidTheRain:toggleRain', 'avoidTheRain:toggleRain', ['stop', 'start'], 'stop');
-sharedParams.addNumber('avoidTheRain:spawnInterval', 'avoidTheRain:spawnInterval', 0, 1, 0.001, 1);
+sharedParams.addNumber('avoidTheRain:balloonRadius', 'AvoidTheRain - balloonRadius', 40, 200, 1, 40);
+sharedParams.addEnum('avoidTheRain:toggleRain', 'AvoidTheRain - toggleRain', ['stop', 'start'], 'stop');
+sharedParams.addNumber('avoidTheRain:spawnInterval', 'AvoidTheRain - spawnInterval', 0, 1, 0.001, 1);
 
 // score state
-sharedParams.addText('score:status', 'score:status', 'pending', 'controller');
+sharedParams.addText('score:status', 'Score - status', 'pending', 'controller');
 
-sharedParams.addEnum('score:showGlobalScore', 'score:showGlobalScore', ['hide', 'show'], 'hide');
-sharedParams.addNumber('score:blue:transfertRatio', 'score:blue:transfertRatio', 0, 1, 0.01, 0);
-sharedParams.addNumber('score:yellow:transfertRatio', 'score:yellow:transfertRatio', 0, 1, 0.01, 0);
-sharedParams.addNumber('score:pink:transfertRatio', 'score:pink:transfertRatio', 0, 1, 0.01, 0);
-sharedParams.addNumber('score:red:transfertRatio', 'score:red:transfertRatio', 0, 1, 0.01, 0);
-sharedParams.addEnum('score:explode', 'score:explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
+sharedParams.addEnum('score:showGlobalScore', 'Score - showGlobalScore', ['hide', 'show'], 'hide');
+sharedParams.addNumber('score:blue:transfertRatio', 'Score - Blue - transfertRatio', 0, 1, 0.01, 0);
+sharedParams.addNumber('score:yellow:transfertRatio', 'Score - Yellow - transfertRatio', 0, 1, 0.01, 0);
+sharedParams.addNumber('score:pink:transfertRatio', 'Score - Pink - transfertRatio', 0, 1, 0.01, 0);
+sharedParams.addNumber('score:red:transfertRatio', 'Score - Red - transfertRatio', 0, 1, 0.01, 0);
+sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 
 
 // ----------------------------------------------------
