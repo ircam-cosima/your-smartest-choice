@@ -122,6 +122,8 @@ class PlayerExperience extends soundworks.Experience {
     });
 
     this.sharedParams = this.require('shared-params');
+    this.sync = this.require('sync');
+    this.scheduler = this.require('scheduler');
 
     this._setState = this._setState.bind(this);
     this._onAcceleration = this._onAcceleration.bind(this);
@@ -221,8 +223,12 @@ class PlayerExperience extends soundworks.Experience {
 
     // state of the application
     this.groupFilter.addListener(this._onCompassUpdate);
-    this.sharedParams.addParamListener('global:state', this._setState);
     this.sharedParams.addParamListener('global:volume', this._setVolume);
+    // this.sharedParams.addParamListener('global:state', this._setState);
+
+    this.receive('global:state', (syncTime, state) => {
+      this.scheduler.defer(() => this._setState(state), syncTime);
+    });
   }
 
   getAudioDestination() {

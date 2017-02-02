@@ -19,14 +19,14 @@ General
   * http://ch.oi.ce (2nd choice)
   * http://your.smartest.choice
 
-States
-- go back to default values between states
-- schedule state change 1 beat after
-
 Bugs
 - fix accelerationIncludingGravity on android
 - iOS get north (orientation)
 - recheck midi (some note on seems to don't trigger)
+
+States
+- go back to default values between states
+- schedule state change 1 beat after (ok)
 
 Compass
 - fix color order in compass (ok)
