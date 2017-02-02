@@ -40,5 +40,4 @@ Kill the Balloons
 
 Avoid the rain
 - add volume for sines (ok)
-- explode balloons on harmony change 
-- fix segment engine
+- explode balloons on harmony change (ok)

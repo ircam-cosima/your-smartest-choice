@@ -106,6 +106,9 @@ class AvoidTheRainSynth {
 
     this.nextHarmony = null;
 
+    if (scheduler.has(this.granularEngine))
+      scheduler.remove(this.granularEngine);
+
     const parts = this.currentHarmony.split(':');
     const marker = parts[0];
     const bar = parts[1];

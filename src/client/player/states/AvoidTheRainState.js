@@ -199,6 +199,11 @@ class AvoidTheRainRenderer extends Renderer {
   }
 
   explode() {
+    if (this.balloon !== null)
+      this.balloon.explode = true;
+  }
+
+  exit() {
     if (this.balloon !== null) {
       this.balloon.explode = true;
       this.explodeState = true;
@@ -324,7 +329,7 @@ class AvoidTheRainState {
 
     this.experience.addAccelerationListener(this._onAccelerationInput);
 
-    this._spawnBalloon();
+    // this._spawnBalloon();
   }
 
   exit() {
@@ -337,7 +342,7 @@ class AvoidTheRainState {
     clearTimeout(this.spawnTimeout);
     clearTimeout(this.createBalloonTimeout);
 
-    this.renderer.explode();
+    this.renderer.exit();
     this.synth.stopSine();
     this.synth.triggerGlitch();
 
@@ -429,6 +434,12 @@ class AvoidTheRainState {
 
   _onHarmonyUpdate(value) {
     this.synth.setNextHarmony(value);
+    this.renderer.explode();
+    this.synth.stopSine();
+    // this.synth.triggerGlitch();
+    // respawn ballon in one second (should be bigger than grain duration)
+    clearTimeout(this.createBalloonTimeout);
+    this.createBalloonTimeout = setTimeout(this._spawnBalloon, 1000);
   }
 }
 
