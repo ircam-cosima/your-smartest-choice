@@ -6,6 +6,7 @@ class ControllerExperience extends BasicSharedController {
 
     this.setGuiOptions('global:state', { type: 'buttons' });
     this.setGuiOptions('global:volume', { type: 'slider', size: 'large' });
+    this.setGuiOptions('global:shared-visual', { type: 'buttons' });
 
     // balloon cover
     this.setGuiOptions('balloonCover:explode', { type: 'buttons' });

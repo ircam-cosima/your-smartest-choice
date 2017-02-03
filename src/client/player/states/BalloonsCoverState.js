@@ -68,6 +68,17 @@ class BalloonCoverRenderer extends Renderer {
     }
   }
 
+  explodeRandomBalloon() {
+    // const index = Math.floor(Math.random() * this.balloons.length);
+    const index = this.balloons.length - 1;
+    const balloon = this.balloons[index];
+
+    if (balloon) {
+      balloon.explode = true;
+      this.aliveBalloons.splice(index, 1);
+    }
+  }
+
   init() {
 
   }
@@ -100,7 +111,7 @@ class BalloonCoverState {
     this.experience = experience;
     this.globalState = globalState;
 
-    const numBarCover = 10;
+    const numBarCover = 1;
 
     this._state = 'cover';
     this._coverTime = 0;
@@ -137,22 +148,10 @@ class BalloonCoverState {
           this._toggleBackground(true);
           this._state = 'explode';
         }
+      } else if (this._state === 'explode') {
+        if (Math.random() < 0.03)
+          this.renderer.explodeRandomBalloon();
       }
-      // } else if (this._state === 'explode') {
-      //   this._explodeTime += dt;
-
-      //   if (this._explodeTime >= this._explodeInterval) {
-      //     const index = Math.floor(colors.length * Math.random());
-      //     const color = colors[index];
-      //     colors.splice(index, 1);
-
-      //     this._explodeBalloons(color);
-      //     this._explodeTime = 0;
-
-      //     if (colors.length === 0)
-      //       this._state = null;
-      //   }
-      // }
     });
 
     this.view.addRenderer(this.renderer);
@@ -162,11 +161,16 @@ class BalloonCoverState {
   }
 
   exit() {
+    this._state = 'exit';
     this.view.$el.classList.remove('foreground');
     this.view.$el.classList.add('background');
-
     this.view.removeRenderer(this.renderer);
     this.view.remove();
+
+    this._toggleBackground(false); // remove shared gif
+
+    const sharedParams = this.experience.sharedParams;
+    sharedParams.removeParamListener('balloonCover:explode', this._explodeBalloons);
   }
 
   _explodeBalloons(color) {
@@ -186,12 +190,9 @@ class BalloonCoverState {
 
   _toggleBackground(value) {
     if (value === true) {
-      const img = this.experience.sharedVisualsConfig.gifs.balloonCoverBackground;
-      const $container = this.view.$el;
-      this.view.$el.style.background = `url(${img}) 50% 50% no-repeat`;
-      this.view.$el.style.backgroundSize = 'contain';
+      this.experience.showSharedVisual('gif:explodingBalloon');
     } else {
-      this.view.$el.style.backgroundImage = '';
+      this.experience.hideSharedVisual();
     }
   }
 }

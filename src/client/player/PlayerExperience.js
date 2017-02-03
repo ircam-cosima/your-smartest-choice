@@ -40,13 +40,42 @@ const globalState = {
 
 const viewTemplate = `
   <canvas class="background"></canvas>
+  <div id="shared-visual-container" class="background"></div>
   <div id="state-container" class="foreground"></div>
 `;
 
 class PlayerView extends soundworks.CanvasView {
   onRender() {
     super.onRender();
+
     this.$stateContainer = this.$el.querySelector('#state-container');
+    this.$sharedVisualContainer = this.$el.querySelector('#shared-visual-container');
+  }
+
+  onResize(width, height, orientation) {
+    super.onResize(width, height, orientation);
+
+    this.$sharedVisualContainer.style.width = `${width}px`;
+    this.$sharedVisualContainer.style.height = `${height}px`;
+    console.log(this.$sharedVisualContainer, width);
+  }
+
+  showSharedVisual(path) {
+    const $container = this.$sharedVisualContainer;
+    $container.style.backgroundImage = `url(${path})`;
+    $container.style.backgroundRepeat = 'no-repeat';
+    $container.style.backgroundPosition = '50% 50%';
+    $container.style.backgroundSize = 'contain';
+
+    // force re-rendering for iOS
+    $container.style.width = '0px';
+    const width = `${this.viewportWidth}px`;
+    setTimeout(() => $container.style.width = width, 0);
+  }
+
+  hideSharedVisual() {
+    // if (this.$sharedVisualContainer)
+      this.$sharedVisualContainer.style.backgroundImage = '';
   }
 
   getStateContainer() {
@@ -113,12 +142,12 @@ class PlayerExperience extends soundworks.Experience {
 
     // load here instead of platform
     this.imageManager = this.require('image-manager', {
-      files: {
-        spriteBlue: this.spriteConfig.groups.blue.file,
-        spritePink: this.spriteConfig.groups.pink.file,
-        spriteYellow: this.spriteConfig.groups.yellow.file,
-        spriteRed: this.spriteConfig.groups.red.file,
-      },
+      files: Object.assign({}, {
+        'sprite:blue': this.spriteConfig.groups.blue.file,
+        'sprite:pink': this.spriteConfig.groups.pink.file,
+        'sprite:yellow': this.spriteConfig.groups.yellow.file,
+        'sprite:red': this.spriteConfig.groups.red.file,
+      }, this.sharedVisualsConfig),
     });
 
     this.sharedParams = this.require('shared-params');
@@ -129,6 +158,7 @@ class PlayerExperience extends soundworks.Experience {
     // this._onAcceleration = this._onAcceleration.bind(this);
     this._onCompassUpdate = this._onCompassUpdate.bind(this);
     this._setVolume = this._setVolume.bind(this);
+    this._onSharedVisualTrigger = this._onSharedVisualTrigger.bind(this);
 
     this._accelerationListeners = new Set();
     this._compassListeners = {};
@@ -136,15 +166,15 @@ class PlayerExperience extends soundworks.Experience {
 
   init() {
     // populate spriteConfig with the sprite images
-    this.spriteConfig.groups.blue.image = this.imageManager.getAsCanvas('spriteBlue');
-    this.spriteConfig.groups.pink.image = this.imageManager.getAsCanvas('spritePink');
-    this.spriteConfig.groups.yellow.image = this.imageManager.getAsCanvas('spriteYellow');
-    this.spriteConfig.groups.red.image = this.imageManager.getAsCanvas('spriteRed');
+    this.spriteConfig.groups.blue.image = this.imageManager.getAsCanvas('sprite:blue');
+    this.spriteConfig.groups.pink.image = this.imageManager.getAsCanvas('sprite:pink');
+    this.spriteConfig.groups.yellow.image = this.imageManager.getAsCanvas('sprite:yellow');
+    this.spriteConfig.groups.red.image = this.imageManager.getAsCanvas('sprite:red');
 
-    this.spriteConfig.groups.blue.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spriteBlue');
-    this.spriteConfig.groups.pink.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spritePink');
-    this.spriteConfig.groups.yellow.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spriteYellow');
-    this.spriteConfig.groups.red.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('spriteRed');
+    this.spriteConfig.groups.blue.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('sprite:blue');
+    this.spriteConfig.groups.pink.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('sprite:pink');
+    this.spriteConfig.groups.yellow.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('sprite:yellow');
+    this.spriteConfig.groups.red.halfSizeImage = this.imageManager.getAsHalfSizeCanvas('sprite:red');
 
     this.spriteConfig.colors = Object.keys(this.spriteConfig.groups);
 
@@ -219,6 +249,7 @@ class PlayerExperience extends soundworks.Experience {
     this.groupFilter.startListening();
     this.groupFilter.addListener(this._onCompassUpdate);
     this.sharedParams.addParamListener('global:volume', this._setVolume);
+    this.sharedParams.addParamListener('global:shared-visual', this._onSharedVisualTrigger);
 
     this.receive('global:state', (syncTime, state) => {
       this.scheduler.defer(() => this._setState(state), syncTime);
@@ -244,9 +275,26 @@ class PlayerExperience extends soundworks.Experience {
     if (this._state)
       this._state.exit();
 
+    this.hideSharedVisual();
     this._state = state;
     this._state.enter();
     this._currentStateName = name;
+  }
+
+  _onSharedVisualTrigger(value) {
+    if (value === 'none')
+      this.hideSharedVisual();
+    else
+      this.showSharedVisual(value);
+  }
+
+  showSharedVisual(id) {
+    const path = this.sharedVisualsConfig[id];
+    this.view.showSharedVisual(path);
+  }
+
+  hideSharedVisual() {
+    this.view.hideSharedVisual();
   }
 
   addCompassListener(channel, callback) {

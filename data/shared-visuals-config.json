@@ -1,5 +1,4 @@
 {
-  "gifs": {
-    "balloonCoverBackground": "images/shared-visuals/balloon-exploding-0.gif",
-  },
+  "gif:explodingBalloon": "images/shared-visuals/16443246_1712725542351508_859311566_n.gif",
+  "gif:flyingBalloons": "images/shared-visuals/16468927_1712669652357097_277338963_n.gif",
 }
