@@ -15,8 +15,8 @@ const template = `
     </div>
     <div class="section-center">
       <% if (showInstructions === true) { %>
-        <p class="align-center big">Level 2</p>
-        <p class="align-center soft-blink">Tilt your phone to avoid the rain drops!</p>
+        <!-- <p class="align-center big">Level 2</p> -->
+        <p class="align-center soft-blink">Tilt your phone to move the balloon!</p>
       <% } %>
     </div>
     <div class="section-bottom flex-middle"></div>
@@ -117,10 +117,7 @@ class AvoidTheRainRenderer extends Renderer {
     this.getBalloonNormalizedPosition = this.getBalloonNormalizedPosition.bind(this);
   }
 
-  createBalloon(radius, fadeInDuration) {
-    // if (this.balloon !== null)
-    //   return;
-
+  createBalloon(radius, fadeInDuration, emulateMotion = false) {
     const config = this.spriteConfig;
     const colorIndex = Math.floor(Math.random() * config.colors.length);
     const color = config.colors[colorIndex];
@@ -131,8 +128,14 @@ class AvoidTheRainRenderer extends Renderer {
     const clipHeight = config.clipSize.height;
     const refreshRate = config.animationRate;
     const size = radius * 2;
-    const x = this.canvasWidth / 2;
-    const y = this.canvasHeight * 3 / 5;
+    let x = this.canvasWidth / 2;
+    let y = this.canvasHeight * 3 / 5;
+
+    // make ballon appear randomly
+    if (emulateMotion) {
+      x = Math.random() * this.canvasWidth;
+      y = Math.random() * this.canvasHeight;
+    }
 
     const balloon = new FloatingBalloon(fadeInDuration, color, image, clipPositions, clipWidth, clipHeight, refreshRate, size, size, x, y);
 
@@ -247,15 +250,19 @@ class AvoidTheRainRenderer extends Renderer {
 }
 
 class AvoidTheRainState {
-  constructor(experience, globalState) {
+  constructor(experience, globalState, client) {
     this.experience = experience;
     this.globalState = globalState;
+    this.client = client;
 
     this.orientation = null;
     this.currentBalloonRadius = 0;
     this.spawnInterval = null;
     this.spawnTimeout = null;
     this.createBalloonTimeout = null;
+    // if true, acceleration is not available so do something...
+    this.emulateMotion = false;
+
 
     this._onResize = this._onResize.bind(this);
     this._spawnBalloon = this._spawnBalloon.bind(this);
@@ -323,13 +330,20 @@ class AvoidTheRainState {
     sharedParams.addParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.addParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     sharedParams.addParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
-    // call this at the end to be sure all other params are set
-    // sharedParams.addParamListener('avoidTheRain:start', this._onStart);
+    // call this at the end to be sure all other params are ready
     sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
-    this.experience.addAccelerationListener(this._onAccelerationInput);
+    // this.experience.addAccelerationListener(this._onAccelerationInput);
+    // stop listening for orientation
+    this.experience.groupFilter.stopListening();
 
-    // this._spawnBalloon();
+    if (window.DeviceMotionEvent) {
+      window.addEventListener('devicemotion', this._onAccelerationInput, false);
+      // if no acceleration event come fallback on emulation
+      this.fallbackTimeout = setTimeout(() => this.emulateMotion = true, 4000);
+    } else {
+      this.emulateMotion = true;
+    }
   }
 
   exit() {
@@ -352,10 +366,13 @@ class AvoidTheRainState {
     sharedParams.removeParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
     sharedParams.removeParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.removeParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
-    // sharedParams.removeParamListener('avoidTheRain:start', this._onStart);
     sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
-    // stop listening motion-input
-    this.experience.removeAccelerationListener(this._onAccelerationInput);
+
+    if (window.DeviceMotionEvent)
+      window.removeEventListener('devicemotion', this._onAccelerationInput, false);
+
+    // restart listening orientation
+    this.experience.groupFilter.startListening();
   }
 
   _onExploded() {
@@ -376,7 +393,21 @@ class AvoidTheRainState {
     this.orientation = orientation;
   }
 
-  _onAccelerationInput(data) {
+  _onAccelerationInput(e) {
+    if (this.fallbackTimeout) { // we have values, prevent fallback to execute
+      clearTimeout(this.fallbackTimeout);
+      this.fallbackTimeout = null;
+    }
+
+    const data = [];
+    data[0] = e.accelerationIncludingGravity.x;
+    data[1] = e.accelerationIncludingGravity.y;
+
+    if (this.client.platform.os === 'ios') {
+      data[0] *= -1;
+      data[1] *= -1;
+    }
+
     let vx;
     let vy;
 
@@ -405,7 +436,7 @@ class AvoidTheRainState {
 
   _spawnBalloon() {
     const fadeInDuration = 1;
-    this.renderer.createBalloon(this.currentBalloonRadius, fadeInDuration);
+    this.renderer.createBalloon(this.currentBalloonRadius, fadeInDuration, this.emulateMotion);
     this.synth.startSine(fadeInDuration);
   }
 

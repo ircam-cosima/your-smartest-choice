@@ -64,7 +64,7 @@ class AvoidTheRainSynth {
   }
 
   setSineMaster(value) {
-    this.sineMaster.gain.value = value;
+    this.sineMaster.gain.setValueAtTime(value, audioContext.currentTime);
   }
 
   getSineResampling() {

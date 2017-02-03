@@ -17,6 +17,7 @@ class GroupFilter extends Service {
     this._listeners = new Set();
     this._zones = [];
     this._zoneGroupMap = new Map();
+    this._emulateMotionTimeout = null;
 
     const defaults = {
       directions: {},
@@ -24,11 +25,8 @@ class GroupFilter extends Service {
 
     this.configure(defaults);
 
-    this.motionInput = this.require('motion-input', {
-      descriptors: ['orientation'],
-    });
-
     this._onOrientation = this._onOrientation.bind(this);
+    this._emulateMotion = this._emulateMotion.bind(this);
   }
 
   init() {
@@ -57,18 +55,41 @@ class GroupFilter extends Service {
     if (!this.hasStarted)
       this.init();
 
-    if (this.motionInput.isAvailable('orientation'))
-      this.motionInput.addListener('orientation', this._onOrientation);
-    else
-      console.warn('@todo: no orientation');
-
     this.ready();
   }
 
   stop() {}
 
+  startListening() {
+    this.stopListening();
+
+    if (window.DeviceOrientationEvent)
+      window.addEventListener('deviceorientation', this._onOrientation, false);
+    else
+      this._emulateMotionTimeout = setTimeout(this._emulateMotion, 100);
+  }
+
+  stopListening() {
+    if (window.DeviceOrientationEvent)
+      window.removeEventListener('deviceorientation', this._onOrientation, false);
+    else
+      clearTimeout(this._emulateMotionTimeout);
+  }
+
+  _emulateMotion() {
+    const colors = Object.keys(this.options.directions);
+    const index = Math.floor(Math.random() * colors.length);
+    this._group = colors[index];
+
+    this._propagate('compass', 0);
+    this._propagate('group', this._group);
+
+    const delay = Math.random() * 6 + 4;
+    this._emulateMotionTimeout = setTimeout(this._emulateMotion, delay * 1000);
+  }
+
   _onOrientation(data) {
-    const compass = data[0]; // degress
+    const compass = data.alpha; // degress
     const group = this._group;
 
     for (let i = 0; i < this._zones.length; i++) {

@@ -18,6 +18,7 @@ switch(process.env.ENV) {
     break;
   default: // @todo - don't forget to uncomment that
     config = defaultConfig;
+    // config = productionConfig;
     break;
 }
 
@@ -53,7 +54,7 @@ sharedParams.addNumber('global:volume', 'Volume', 0, 1, 0.001, 1);
 
 sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 // kill the balloons state controls
-sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawnInterval', 0, 10, 0.001, 5);
+sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawnInterval', 0, 10, 0.001, 0.25);
 sharedParams.addNumber('killTheBalloons:sizeDiversity', 'KillTheBalloons - sizeDiversity', 0, 1, 0.001, 0);
 sharedParams.addEnum('killTheBalloons:samplesSet', 'KillTheBalloons - samplesSet', [0, 1, 2, 3, 4], 0);
 

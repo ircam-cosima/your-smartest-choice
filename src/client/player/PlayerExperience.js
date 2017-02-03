@@ -97,14 +97,14 @@ class PlayerExperience extends soundworks.Experience {
 
     // this.platform = this.require('platform', { features: ['web-audio', 'wake-lock'] });
     this.platform = this.require('platform', { features: ['web-audio'] });
+    this.platform = this.require('platform');
+    // this.platform.addFeatureDefinition(sensorHook);
+    // this.platform.requireFeature('web-audio', 'sensors' /*, 'wake-lock' */);
+
     this.checkin = this.require('checkin', { showDialog: false });
     this.audioBufferManager = this.require('audio-buffer-manager', {
       assetsDomain: assetsDomain,
       files: audioFiles,
-    });
-
-    this.motionInput = this.require('motion-input', {
-      descriptors: ['accelerationIncludingGravity'],
     });
 
     this.groupFilter = this.require('group-filter', {
@@ -126,7 +126,7 @@ class PlayerExperience extends soundworks.Experience {
     this.scheduler = this.require('scheduler');
 
     this._setState = this._setState.bind(this);
-    this._onAcceleration = this._onAcceleration.bind(this);
+    // this._onAcceleration = this._onAcceleration.bind(this);
     this._onCompassUpdate = this._onCompassUpdate.bind(this);
     this._setVolume = this._setVolume.bind(this);
 
@@ -215,16 +215,10 @@ class PlayerExperience extends soundworks.Experience {
         this.sharedVisuals.kill();
     });
 
-    // motion input
-    if (this.motionInput.isAvailable('accelerationIncludingGravity'))
-      this.motionInput.addListener('accelerationIncludingGravity', this._onAcceleration);
-    else
-      console.warn('@todo: no acceleration');
-
     // state of the application
+    this.groupFilter.startListening();
     this.groupFilter.addListener(this._onCompassUpdate);
     this.sharedParams.addParamListener('global:volume', this._setVolume);
-    // this.sharedParams.addParamListener('global:state', this._setState);
 
     this.receive('global:state', (syncTime, state) => {
       this.scheduler.defer(() => this._setState(state), syncTime);
@@ -236,17 +230,16 @@ class PlayerExperience extends soundworks.Experience {
   }
 
   _setVolume(value) {
-    this.master.gain.value = value;
+    this.master.gain.setValueAtTime(value, audioContext.currentTime);
   }
 
   _setState(name) {
-    // console.log('%cstate: ' + name, 'color:green');
     const ctor = states[name];
 
     if (!ctor)
       throw new Error(`Invalid state: "${name}"`);
 
-    const state = new ctor(this, globalState);
+    const state = new ctor(this, globalState, client);
 
     if (this._state)
       this._state.exit();
@@ -254,18 +247,6 @@ class PlayerExperience extends soundworks.Experience {
     this._state = state;
     this._state.enter();
     this._currentStateName = name;
-  }
-
-  addAccelerationListener(callback) {
-    this._accelerationListeners.add(callback);
-  }
-
-  removeAccelerationListener(callback) {
-    this._accelerationListeners.delete(callback);
-  }
-
-  _onAcceleration(data) {
-    this._accelerationListeners.forEach(callback => callback(data));
   }
 
   addCompassListener(channel, callback) {

@@ -100,7 +100,7 @@ class BalloonCoverState {
     this.experience = experience;
     this.globalState = globalState;
 
-    const numBarCover = 1;
+    const numBarCover = 10;
 
     this._state = 'cover';
     this._coverTime = 0;

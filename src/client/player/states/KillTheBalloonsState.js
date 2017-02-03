@@ -15,8 +15,7 @@ const template = `
     </div>
     <div class="section-center">
       <% if (showInstructions) { %>
-        <p class="align-center big">Level 1</p>
-        <p class="align-center soft-blink">Click the balloons to explode them!</p>
+        <p class="align-center soft-blink">Hit the balloons!</p>
       <% } %>
     </div>
     <div class="section-bottom flex-middle"></div>
@@ -94,6 +93,7 @@ class KillTheBalloonsRenderer extends Renderer {
   }
 
   explodeAll() {
+    console.log('explode all');
     for (let z = 0; z < this.balloons.length; z++) {
       const layer = this.balloons[z];
 
@@ -228,6 +228,8 @@ class KillTheBalloonsState {
 
   _spawnBalloon() {
     this.renderer.spawnBalloon();
+
+    clearTimeout(this._spawnTimeout);
     this._spawnTimeout = setTimeout(this._spawnBalloon, this._getSpawnDelay());
   }
 

@@ -83,6 +83,7 @@ class SampleSynth {
 
     this._output = audioContext.createGain();
     this._output.gain.value = sanitize(options.gain, 1);
+    this._output.gain.setValueAtTime(sanitize(options.gain, 1), audioContext.currentTime);
 
     this._src = null;
     this._env = null;
@@ -91,7 +92,7 @@ class SampleSynth {
   }
 
   set gain(value) {
-    this._output.gain.value = value;
+    this._output.gain.setValueAtTime(value, audioContext.currentTime);
   }
 
   connect(node) {
