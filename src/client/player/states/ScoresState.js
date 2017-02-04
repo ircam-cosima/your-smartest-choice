@@ -130,32 +130,25 @@ class ScoresRenderer extends Renderer {
     const w = this.canvasWidth;
     const h = this.canvasHeight;
     const maxSize = Math.min(h, w) * 2;
-    const minSize = Math.min(h, w) * 0.2;
+    const minSize = Math.min(h, w) * 0.3;
     const globalScore = this.globalScore;
 
     if (globalScore === null)
       return minSize;
 
-    let maxScore = -Infinity;
-    let minScore = +Infinity;
+    let maxPercent = -Infinity;
 
     for (let color in globalScore) {
-      if (globalScore[color] > maxScore)
-        maxScore = globalScore[color];
-
-      if (globalScore[color] < minScore)
-        minScore = globalScore[color];
+      if (globalScore[color] > maxPercent)
+        maxPercent = globalScore[color];
     }
 
-    const score = globalScore[color];
-    const normScore = (maxScore - minScore) === 0 ?
-      0 : (score - minScore) / (maxScore - minScore);
-    const ratio = this.transferRatios[color];
-    const adjustedNormScore = normScore * ratio;
-    const displaySize = (maxSize - minSize) * adjustedNormScore + minSize;
+    // max percent is max size - 0 is min size
+    const currentPercent = globalScore[color] * this.transferRatios[color];
+    const normCurrentPercent = currentPercent / maxPercent;
+    const displaySize = (maxSize - minSize) * normCurrentPercent + minSize;
 
     return Math.floor(displaySize);
-
   }
 
   init() {
@@ -174,7 +167,7 @@ class ScoresRenderer extends Renderer {
       const clipWidth = config.clipSize.width;
       const clipHeight = config.clipSize.height;
       const refreshRate = config.animationRate;
-      const size = this._getLocalBalloonSize(color);
+      const size = this._getGlobalBalloonSize(color);
 
       const x = hw / 2 + hw * (index % 2);
       const y = hh / 2 + hh * Math.floor(index / 2);
@@ -304,7 +297,7 @@ class ScoresState {
 
   enter() {
     const displayedLocalScore = Object.assign({}, this.localScore);
-    const displayedGlobalScore = { red: '0%', blue: '0%', pink: '0%', yellow: '0%' };
+    const displayedGlobalScore = { red: '0.0%', blue: '0.0%', pink: '0.0%', yellow: '0.0%' };
 
     this.view = new ScoresView(template, {
       showGlobalScore: false,
@@ -352,13 +345,14 @@ class ScoresState {
     sharedParams.removeParamListener('score:yellow:transfertRatio', this._onYellowTransfertRatioUpdate);
     sharedParams.removeParamListener('score:red:transfertRatio', this._onRedTransfertRatioUpdate);
     sharedParams.removeParamListener('score:explode', this._onExplode);
+
+    this.experience.removeListener('global:score', this._onGlobalScoreResponse);
   }
 
   _onGlobalScoreResponse(globalScore) {
     // populate renderer with globalScore
-    console.log(globalScore);
     this.globalScore = globalScore;
-    this.renderer.globalScore = globalScore.fakeResults;
+    this.renderer.globalScore = globalScore;
 
     this._onBlueTransfertRatioUpdate(this.transferRatios['blue']);
     this._onPinkTransfertRatioUpdate(this.transferRatios['pink']);
@@ -379,14 +373,13 @@ class ScoresState {
       this.transferRatios[color] = value;
       this.renderer.setTransfertRatio(color, value);
 
-      // // update local score
+      // update local score
       const remainValue = Math.round(this.localScore[color] * (1 - value));
       this.view.content.localScore[color] = remainValue;
       // update global score
       if (this.globalScore) {
-        const transferedValue = this.globalScore.fakeResults[color] * value;
-        const percent = transferedValue / this.globalScore.total * 100;
-        this.view.content.globalScore[color] = `${percent.toFixed(2)}%`;
+        const percent = this.globalScore[color] * value;
+        this.view.content.globalScore[color] = `${percent.toFixed(1)}%`;
       }
 
       this.view.render(`.score.${color} p.local`);

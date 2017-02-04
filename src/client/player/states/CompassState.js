@@ -9,7 +9,7 @@ const template = `
       <p><%= angle %></p>
     </div>
     <div class="section-bottom flex-middle">
-      <p class="small">Use the compass to choose your instrument</p>
+      <p class="small">Use the compass to choose<br />your instrument</p>
     </div>
   </div>
 `;

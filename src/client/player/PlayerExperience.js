@@ -57,7 +57,6 @@ class PlayerView extends soundworks.CanvasView {
 
     this.$sharedVisualContainer.style.width = `${width}px`;
     this.$sharedVisualContainer.style.height = `${height}px`;
-    console.log(this.$sharedVisualContainer, width);
   }
 
   showSharedVisual(path) {
@@ -126,9 +125,6 @@ class PlayerExperience extends soundworks.Experience {
 
     // this.platform = this.require('platform', { features: ['web-audio', 'wake-lock'] });
     this.platform = this.require('platform', { features: ['web-audio'] });
-    this.platform = this.require('platform');
-    // this.platform.addFeatureDefinition(sensorHook);
-    // this.platform.requireFeature('web-audio', 'sensors' /*, 'wake-lock' */);
 
     this.checkin = this.require('checkin', { showDialog: false });
     this.audioBufferManager = this.require('audio-buffer-manager', {
@@ -202,7 +198,6 @@ class PlayerExperience extends soundworks.Experience {
     this.master = audioContext.createGain();
     this.master.connect(audioContext.destination);
     this.master.gain.value = 1;
-    this.master.gain.setValueAtTime(1, audioContext.currentTime);
 
     // global view
     this.view.setPreRender((ctx, dt, width, height) => {
@@ -261,7 +256,7 @@ class PlayerExperience extends soundworks.Experience {
   }
 
   _setVolume(value) {
-    this.master.gain.setValueAtTime(value, audioContext.currentTime);
+    this.master.gain.value = value;
   }
 
   _setState(name) {

@@ -15,9 +15,13 @@ const template = `
     </div>
     <div class="section-center">
       <% if (showInstructions === true) { %>
-        <!-- <p class="align-center big">Level 2</p> -->
         <p class="align-center soft-blink">Tilt your phone to move the balloon!</p>
       <% } %>
+      <div class="show-text">
+      <% if (showText === 'fly') { %>
+        <p class="align-center soft-blink">fly with the balloon<br />to avoid the rain!</p>
+      <% } %>
+      </div>
     </div>
     <div class="section-bottom flex-middle"></div>
   </div>
@@ -274,6 +278,7 @@ class AvoidTheRainState {
     this._onExploded = this._onExploded.bind(this);
     this._onHarmonyUpdate = this._onHarmonyUpdate.bind(this);
     this._onSineVolumeUpdate = this._onSineVolumeUpdate.bind(this);
+    this._onShowText = this._onShowText.bind(this);
 
     this.renderer = new AvoidTheRainRenderer(this.experience.spriteConfig, this._onRainHit, this._onExploded);
 
@@ -291,6 +296,7 @@ class AvoidTheRainState {
     this.view = new AvoidTheRainView(template, {
       showInstructions: true,
       score: Object.assign({}, this.globalState.score),
+      showText: 'none',
     }, {}, {
       className: ['avoid-the-rain-state', 'foreground'],
     });
@@ -330,6 +336,7 @@ class AvoidTheRainState {
     sharedParams.addParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.addParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     sharedParams.addParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
+    sharedParams.addParamListener('avoidTheRain:showText', this._onShowText);
     // call this at the end to be sure all other params are ready
     sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
@@ -366,6 +373,7 @@ class AvoidTheRainState {
     sharedParams.removeParamListener('avoidTheRain:balloonRadius', this._updateBalloonRadius);
     sharedParams.removeParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.removeParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
+    sharedParams.removeParamListener('avoidTheRain:showText', this._onShowText);
     sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
     if (window.DeviceMotionEvent)
@@ -378,6 +386,11 @@ class AvoidTheRainState {
   _onExploded() {
     this.view.removeRenderer(this.renderer);
     this.view.remove();
+  }
+
+  _onShowText(value) {
+    this.view.content.showText = value;
+    this.view.render('.show-text');
   }
 
   _onSineVolumeUpdate(value) {
@@ -464,13 +477,18 @@ class AvoidTheRainState {
   }
 
   _onHarmonyUpdate(value) {
-    this.synth.setNextHarmony(value);
-    this.renderer.explode();
-    this.synth.stopSine();
-    // this.synth.triggerGlitch();
-    // respawn ballon in one second (should be bigger than grain duration)
+    // if a respawn was scheduled
     clearTimeout(this.createBalloonTimeout);
-    this.createBalloonTimeout = setTimeout(this._spawnBalloon, 1000);
+
+    setTimeout(() => {
+      this.synth.setNextHarmony(value);
+      this.renderer.explode();
+      this.synth.stopSine();
+      // this.synth.triggerGlitch();
+      // respawn ballon in one second (should be bigger than grain duration)
+      clearTimeout(this.createBalloonTimeout);
+      this.createBalloonTimeout = setTimeout(this._spawnBalloon, 1000);
+    }, 3000 * Math.random());
   }
 }
 

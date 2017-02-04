@@ -35,7 +35,7 @@ class AvoidTheRainSynth {
 
     this.currentBuffer = null;
     this.currentDetune = null;
-    this.resamplingInterval = 200; // 1 tone up, 1 tone down
+    this.resamplingInterval = 100; // 1 tone up, 1 tone down
     this.controlPosition = [0, 0];
 
     const now = audioContext.currentTime;
@@ -43,7 +43,6 @@ class AvoidTheRainSynth {
     this.sineMaster = audioContext.createGain();
     this.sineMaster.connect(this.output);
     this.sineMaster.gain.value = 1;
-    this.sineMaster.gain.setValueAtTime(1, now);
 
     this.env = audioContext.createGain();
     this.env.connect(this.sineMaster);
@@ -53,7 +52,6 @@ class AvoidTheRainSynth {
     this.volume = audioContext.createGain();
     this.volume.connect(this.env);
     this.volume.gain.value = 1;
-    this.volume.gain.setValueAtTime(1, now);
 
     this.granularEngine = new SineEngine(this);
     this.granularEngine.connect(this.volume);
@@ -64,7 +62,7 @@ class AvoidTheRainSynth {
   }
 
   setSineMaster(value) {
-    this.sineMaster.gain.setValueAtTime(value, audioContext.currentTime);
+    this.sineMaster.gain.value = value;
   }
 
   getSineResampling() {
@@ -83,7 +81,7 @@ class AvoidTheRainSynth {
     const scaledDelta = inverseNormDelta * 0.8 + 0.2;
     const gain = scaledDelta * scaledDelta;
 
-    this.volume.gain.setValueAtTime(gain, audioContext.currentTime);
+    this.volume.gain.value = gain;
   }
 
 
@@ -92,10 +90,13 @@ class AvoidTheRainSynth {
     const buffer = this.glitchBuffers[index];
     const now = audioContext.currentTime;
     const duration = buffer.duration;
+    // const detune = (Math.random() * 2 - 1) * 1200;
+    const resampling = Math.random() * 1.5 + 0.5;
 
     const src = audioContext.createBufferSource();
     src.connect(this.output);
     src.buffer = buffer;
+    src.playbackRate.value = resampling;
     src.start(now);
     src.stop(now + duration);
   }
@@ -115,7 +116,7 @@ class AvoidTheRainSynth {
 
     const config = this.harmonyConfig['sines-score'][marker];
     // 0 is low voice, 1 is high voice - 0.7 probability for low voice
-    const voiceIndex = Math.random() < 0.7 ? 0 : 1;
+    const voiceIndex = Math.random() < 0.4 ? 0 : 1;
     const voice = config[voiceIndex];
     const buffer = this.sinesBuffers[voice.fileIndex];
     const detunes = voice.detunes[bar];

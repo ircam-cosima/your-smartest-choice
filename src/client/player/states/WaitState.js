@@ -106,7 +106,7 @@ class WaitState {
     this.view.$el.classList.add('background');
 
     this.view.content.showText = false;
-    this.view.render('.section-center');
+    this.view.render('.section-bottom');
     // make the balloon explode, wait for
     this.renderer.explode();
   }

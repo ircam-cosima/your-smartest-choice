@@ -8,8 +8,8 @@
   "sustained": true,
   "offset": 0.118,
   "offsetVar": 0.118,
-  "attack": 0.141,
-  "release": 0.463,
+  "attack": 5.141,
+  "release": 1.463,
   "loopStart": 0.139,
   "loopStartVar": 0.082,
   "loopEnd": 1.451,
@@ -91,26 +91,11 @@
   "loopEnd": 8.207006802721088,
   "loopEndVar": 0
 },
-{
-  "filename": "2.1_jms_echo9.mp3",
-  "duration": 3.2663492063492066,
-  "midiKey": 7,
-  "group": "all",
-  "gain": 1,
-  "sustained": true,
-  "offset": 0,
-  "offsetVar": 0,
-  "attack": 0,
-  "release": 0,
-  "loopStart": 0,
-  "loopStartVar": 0,
-  "loopEnd": 3.2663492063492066,
-  "loopEndVar": 0
-},
+
 {
   "filename": "1.3_jms_echo6.mp3",
   "duration": 1.4362131519274377,
-  "midiKey": 8,
+  "midiKey": 9,
   "group": "red",
   "gain": 1,
   "sustained": true,
@@ -123,22 +108,7 @@
   "loopEnd": 1.4362131519274377,
   "loopEndVar": 0
 },
-{
-  "filename": "2.2_jms_echo7.mp3",
-  "duration": 1.1270975056689343,
-  "midiKey": 9,
-  "group": "yellow",
-  "gain": 1,
-  "sustained": true,
-  "offset": 0,
-  "offsetVar": 0,
-  "attack": 0,
-  "release": 0,
-  "loopStart": 0,
-  "loopStartVar": 0,
-  "loopEnd": 1.1270975056689343,
-  "loopEndVar": 0
-},
+
 {
   "filename": "1_1_jms_echo.mp3",
   "duration": 1.6557369614512472,
@@ -231,6 +201,8 @@
   "loopEnd": 4.55671201814059,
   "loopEndVar": 0
 },
+
+
 {
   "filename": "3.8_vla01_LO.mp3",
   "duration": 2.66031746031746,
@@ -264,10 +236,10 @@
   "loopEndVar": 0
 },
 {
-  "filename": "1.4_jms_echo7.mp3",
-  "duration": 0.6440816326530612,
+  "filename": "piano-bass-revers.mp3",
+  "duration": 6.074580498866213,
   "midiKey": 18,
-  "group": "red",
+  "group": "blue",
   "gain": 1,
   "sustained": true,
   "offset": 0,
@@ -276,7 +248,7 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 0.6440816326530612,
+  "loopEnd": 6.074580498866213,
   "loopEndVar": 0
 },
 {
@@ -340,10 +312,10 @@
   "loopEndVar": 0
 },
 {
-  "filename": "3.13_VLN02.mp3",
-  "duration": 2.428185941043084,
+  "filename": "click_ball-out2.mp3",
+  "duration": 10.646462585034014,
   "midiKey": 23,
-  "group": "yellow",
+  "group": "red",
   "gain": 1,
   "sustained": true,
   "offset": 0,
@@ -352,14 +324,14 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 2.428185941043084,
+  "loopEnd": 10.646462585034014,
   "loopEndVar": 0
 },
 {
-  "filename": "3.3_hp03.mp3",
-  "duration": 0.6094557823129252,
+  "filename": "simulation_ensem.mp3",
+  "duration": 47.18657596371882,
   "midiKey": 24,
-  "group": "blue",
+  "group": "all",
   "gain": 1,
   "sustained": true,
   "offset": 0,
@@ -368,7 +340,7 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 0.6094557823129252,
+  "loopEnd": 47.18657596371882,
   "loopEndVar": 0
 },
 {
@@ -436,8 +408,8 @@
   "loopEndVar": 0
 },
 {
-  "filename": "5.2_pf05.mp3",
-  "duration": 2.6474149659863944,
+  "filename": "ball_3_1.mp3",
+  "duration": 2.7118367346938776,
   "midiKey": 26,
   "group": "red",
   "gain": 1,
@@ -448,29 +420,13 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 2.6474149659863944,
+  "loopEnd": 2.7118367346938776,
   "loopEndVar": 0
 },
 {
-  "filename": "5.4_vla05.mp3",
-  "duration": 3.9055102040816325,
+  "filename": "ball_2.mp3",
+  "duration": 4.061678004535147,
   "midiKey": 27,
-  "group": "pink",
-  "gain": 1,
-  "sustained": true,
-  "offset": 0,
-  "offsetVar": 0,
-  "attack": 0,
-  "release": 0,
-  "loopStart": 0,
-  "loopStartVar": 0,
-  "loopEnd": 3.9055102040816325,
-  "loopEndVar": 0
-},
-{
-  "filename": "5.3_hp05.mp3",
-  "duration": 2.3145578231292516,
-  "midiKey": 28,
   "group": "blue",
   "gain": 1,
   "sustained": true,
@@ -480,12 +436,28 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 2.3145578231292516,
+  "loopEnd": 4.061678004535147,
   "loopEndVar": 0
 },
 {
-  "filename": "5.5_VLN05.mp3",
-  "duration": 2.2507256235827664,
+  "filename": "ball_4.mp3",
+  "duration": 3.3306349206349206,
+  "midiKey": 28,
+  "group": "pink",
+  "gain": 1,
+  "sustained": true,
+  "offset": 0,
+  "offsetVar": 0,
+  "attack": 0,
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 3.3306349206349206,
+  "loopEndVar": 0
+},
+{
+  "filename": "ball_game6.mp3",
+  "duration": 1.6059863945578232,
   "midiKey": 29,
   "group": "yellow",
   "gain": 1,
@@ -496,14 +468,14 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 2.2507256235827664,
+  "loopEnd": 1.6059863945578232,
   "loopEndVar": 0
 },
 {
-  "filename": "1.3_jms_echo6.mp3",
-  "duration": 1.4362131519274377,
+  "filename": "piano_s_vocoder2.mp3",
+  "duration": 15.650249433106575,
   "midiKey": 30,
-  "group": "pink",
+  "group": "red",
   "gain": 1,
   "sustained": true,
   "offset": 0,
@@ -512,7 +484,7 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 1.4362131519274377,
+  "loopEnd": 15.650249433106575,
   "loopEndVar": 0
 },
 {
@@ -540,17 +512,22 @@
   "release": 0
 },
 {
-  "filename": "6.3_vla06A.mp3",
-  "duration": 0.6057596371882086,
+  "filename": "piano-bass-out.mp3",
+  "duration": 3.885578231292517,
   "midiKey": 33,
-  "group": "pink",
+  "group": "yellow",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 3.885578231292517,
+  "loopEndVar": 0
 },
+
 {
   "filename": "6.4_hp06A.mp3",
   "duration": 1.578548752834467,
@@ -564,7 +541,7 @@
   "release": 0
 },
 {
-  "filename": "7.2_reverse_cresendo_Argatu  - Ca pe lunca (cu Sofia Vicoveanca).mp3",
+  "filename": "7.2_reverse_cresendo.mp3",
   "duration": 7.713990929705216,
   "midiKey": 35,
   "group": "all",
@@ -576,7 +553,7 @@
   "release": 0
 },
 {
-  "filename": "237486__ofuscapreto__robot-noise-rising.mp3",
+  "filename": "robot-noise-rising.mp3",
   "duration": 11.265124716553288,
   "midiKey": 36,
   "group": "red",
@@ -592,8 +569,8 @@
   "loopEndVar": 0
 },
 {
-  "filename": "ballon_speaking.mp3",
-  "duration": 84.65079365079364,
+  "filename": "sine-compression-1.mp3",
+  "duration": 7.444897959183673,
   "midiKey": 37,
   "group": "blue",
   "gain": 1,
@@ -604,13 +581,13 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 84.65079365079364,
+  "loopEnd": 7.444897959183673,
   "loopEndVar": 0
 },
 {
   "filename": "m22-end.mp3",
   "duration": 19.1972335600907,
-  "midiKey": null,
+  "midiKey": 38,
   "group": "yellow",
   "gain": 1,
   "sustained": true,
@@ -623,7 +600,7 @@
   "loopEnd": 19.1972335600907,
   "loopEndVar": 0
 },
-{
+   {
   "filename": "gliss_ring.mp3",
   "duration": 77.52294784580499,
   "midiKey": 39,
@@ -672,8 +649,8 @@
   "loopEndVar": 0
 },
 {
-  "filename": "silence.mp3",
-  "duration": 1,
+  "filename": "sinlence.mp3",
+  "duration": 1.8836054421768706,
   "midiKey": 42,
   "group": "red",
   "gain": 1,
@@ -684,28 +661,28 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 1,
+  "loopEnd": 1.8836054421768706,
   "loopEndVar": 0
 },
 {
-  "filename": "silence.mp3",
-  "duration": 1,
+  "filename": "sinlence.mp3",
+  "duration": 1.8836054421768706,
   "midiKey": 43,
   "group": "blue",
   "gain": 1,
-  "sustained": "yellow",
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 1,
+  "loopEnd": 1.8836054421768706,
   "loopEndVar": 0
 },
 {
-  "filename": "silence.mp3",
-  "duration": 1,
+  "filename": "sinlence.mp3",
+  "duration": 1.8836054421768706,
   "midiKey": 44,
   "group": "yellow",
   "gain": 1,
@@ -716,12 +693,13 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 1,
+  "loopEnd": 1.8836054421768706,
   "loopEndVar": 0
 },
+
 {
-  "filename": "silence.mp3",
-  "duration": 1,
+  "filename": "sinlence.mp3",
+  "duration": 1.8836054421768706,
   "midiKey": 45,
   "group": "pink",
   "gain": 1,
@@ -732,8 +710,7 @@
   "release": 0,
   "loopStart": 0,
   "loopStartVar": 0,
-  "loopEnd": 1,
+  "loopEnd": 1.8836054421768706,
   "loopEndVar": 0
 }
-
 ]

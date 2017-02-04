@@ -27,6 +27,7 @@ Bugs
 - recheck midi (some note on seems to don't trigger)
 
 - recheck if `master.gain.value = value;` works
+  * remove `setValueAtTime();``
 
 States
 - go back to default values between states
@@ -36,7 +37,7 @@ Global
 - display background gifs (ok)
 
 Wait
-- remove test right on exit
+- remove text right on exit
 
 Compass
 - fix color order in compass (ok)
@@ -49,15 +50,26 @@ BalloonCover
 Kill the Balloons
 - fix spawn interval (ok)
 - control balloon size diversity (ok)
-- default value to 0.15
+- default value to 0.15 (ok)
 
 Avoid the rain
 - add volume for sines (ok)
 - explode balloons on harmony change (ok)
 
 @still todo
-- show texts in games
+- avoid the rain glitch detune (ok)
+- kill the balloons: update samples (ok)
+- avoid the rain: hardcore test harmony transitions (looks ok)
+- fix `master.gain.value = value;` for volumes (ok)
+  * remove `setValueAtTime();`
+- wait: remove text right on exit (ok)
 
+- intermezzo score: allow negative values (ok)
+- fix final score broadcast (ok)
+- fix final score size (ok)
+
+- show texts in games 
+- replace samples (cf. todo)
 --
 
 M6 I want to play the gif 16468927...
@@ -68,8 +80,8 @@ M6 I want to play the gif 16468927...
 bar 107 start balloon cover, and on M8 I want to play gif 16443246...
 
 => ok so we have (107 - M8 (118)) 11 bars to cover the screen with balloons 
+=> then you explode the balloons manually during M8 ?
 
-then you explode the balloons manually during M8 ?
 bar 122 start the Killingballoon with default value 0.15 
 
 => ok  done

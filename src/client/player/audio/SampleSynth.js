@@ -167,8 +167,6 @@ class SampleSynth {
     let cancelScheduledValues = (dt < this.attack) ? true : false;
     const release = min(duration - position, this.release);
 
-    // console.log('startTime:', this._startTime, 'time:', time);
-    // console.log('position:', position, 'releasePosition:', releasePosition, 'release:', release);
     // stop source
     resetSourceLoop(src);
     const endTime = stopEnvelope(env, time, release, cancelScheduledValues);

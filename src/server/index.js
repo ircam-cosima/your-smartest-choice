@@ -39,8 +39,13 @@ soundworks.server.setClientConfigDefinition((clientType, config, httpRequest) =>
 });
 
 
-// order of the winners: pink should loose last (piano), etc...
-const winnersOrder = ['pink', 'red', 'blue', 'yellow'];
+// results in percents at the end of the game
+const winnersResults = {
+  red: 31.2,
+  yellow: 27.6,
+  pink: 21.3,
+  blue: 19.9,
+};
 
 // ----------------------------------------------------
 // configure sharedParameters
@@ -48,38 +53,53 @@ const winnersOrder = ['pink', 'red', 'blue', 'yellow'];
 
 const sharedParams = soundworks.server.require('shared-params');
 
+// --------------------------------------
 // globals
+// --------------------------------------
 sharedParams.addEnum('global:state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
 sharedParams.addNumber('global:volume', 'Volume', 0, 1, 0.001, 1);
 
 sharedParams.addEnum('global:shared-visual', 'Shared Visual - Add', ['none', 'gif:explodingBalloon', 'gif:flyingBalloons'], 'none');
 
+// --------------------------------------
+// balloon cover
+// --------------------------------------
+sharedParams.addText('balloonCover:title', '&nbsp;', 'BALLOONS COVER');
 sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
-// kill the balloons state controls
+
+// --------------------------------------
+// kill the balloons
+// --------------------------------------
+sharedParams.addText('killTheBalloons:title', '&nbsp;', 'KILL THE BALLOONS');
 sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawnInterval', 0, 10, 0.001, 0.15);
 sharedParams.addNumber('killTheBalloons:sizeDiversity', 'KillTheBalloons - sizeDiversity', 0, 1, 0.001, 0);
 sharedParams.addEnum('killTheBalloons:samplesSet', 'KillTheBalloons - samplesSet', [0, 1, 2, 3, 4], 0);
+sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'tempo'], 'none');
 
-// avoid the rain state controls
+// --------------------------------------
+// avoid the rain
+// --------------------------------------
+sharedParams.addText('avoidTheRain:title', '&nbsp;', 'AVOID THE RAIN');
 sharedParams.addEnum('avoidTheRain:harmony', 'AvoidTheRain - harmony', [
   'M15:0', 'M15:1', 'M15:2', 'M15:3',
   'M16:0', 'M16:1', 'M16:2', 'M16:3',
   'M17:0', 'M17:1', 'M17:2', 'M17:3',
   'M18:0', 'M18:1', 'M18:2', 'M18:3',
 ], 'M15:0');
-
 sharedParams.addEnum('avoidTheRain:toggleRain', 'AvoidTheRain - toggleRain', ['stop', 'start'], 'stop');
 sharedParams.addNumber('avoidTheRain:sineVolume', 'AvoidTheRain - sineVolume', 0, 1, 0.01, 1);
 sharedParams.addNumber('avoidTheRain:balloonRadius', 'AvoidTheRain - balloonRadius', 40, 200, 1, 40);
 sharedParams.addNumber('avoidTheRain:spawnInterval', 'AvoidTheRain - spawnInterval', 0, 1, 0.001, 1);
+sharedParams.addEnum('avoidTheRain:showText', 'AvoidTheRain - showText', ['none', 'fly'], 'none');
 
-// score state
-sharedParams.addText('score:status', 'Score - status', 'pending', 'controller');
-
+// --------------------------------------
+// score
+// --------------------------------------
+sharedParams.addText('score:title', '&nbsp;', 'FINAL SCORE');
 sharedParams.addEnum('score:showGlobalScore', 'Score - showGlobalScore', ['hide', 'show'], 'hide');
 sharedParams.addNumber('score:blue:transfertRatio', 'Score - Blue - transfertRatio', 0, 1, 0.01, 0);
-sharedParams.addNumber('score:yellow:transfertRatio', 'Score - Yellow - transfertRatio', 0, 1, 0.01, 0);
 sharedParams.addNumber('score:pink:transfertRatio', 'Score - Pink - transfertRatio', 0, 1, 0.01, 0);
+sharedParams.addNumber('score:yellow:transfertRatio', 'Score - Yellow - transfertRatio', 0, 1, 0.01, 0);
 sharedParams.addNumber('score:red:transfertRatio', 'Score - Red - transfertRatio', 0, 1, 0.01, 0);
 sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 
@@ -88,7 +108,7 @@ sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink'
 // run application
 // ----------------------------------------------------
 
-const experience = new PlayerExperience('player', midiConfig, winnersOrder);
+const experience = new PlayerExperience('player', midiConfig, winnersResults);
 const controller = new soundworks.BasicSharedController('controller');
 
 soundworks.server.start();

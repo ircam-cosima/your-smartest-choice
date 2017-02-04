@@ -64,16 +64,21 @@ class IntermezzoRenderer extends Renderer {
     const maxSize = size - padding;
     const minSize = maxSize * config.minSizeScoreRatio;
     let maxScore = -Infinity;
+    let minScore = +Infinity;
 
     for (let key in this.score) {
       if (this.score[key] > maxScore)
         maxScore = this.score[key];
+
+      if (this.score[key] < minScore)
+        minScore = this.score[key];
     }
 
     // initialize the balloons
     scoreOrder.forEach((color, index) => {
       const score = this.score[color];
-      const normScore = maxScore !== 0 ? score / maxScore : 0;
+      const normScore = (maxScore - minScore) === 0 ?
+        0 : (score - minScore) / (maxScore - minScore);
 
       const image = config.groups[color].image;
       const clipPositions = config.groups[color].clipPositions;
@@ -167,6 +172,11 @@ class IntermezzoState {
       for (let color in displayedScore) {
         if (displayedScore[color] < score[color]) {
           displayedScore[color] += 1;
+          updated = true;
+        }
+
+        if (displayedScore[color] > score[color]) {
+          displayedScore[color] -= 1;
           updated = true;
         }
       }

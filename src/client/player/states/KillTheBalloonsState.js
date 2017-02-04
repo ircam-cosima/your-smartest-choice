@@ -17,6 +17,11 @@ const template = `
       <% if (showInstructions) { %>
         <p class="align-center soft-blink">Hit the balloons!</p>
       <% } %>
+      <div class="show-text">
+      <% if (showText === 'tempo') { %>
+        <p class="align-center soft-blink">On tempo!</p>
+      <% } %>
+      </div>
     </div>
     <div class="section-bottom flex-middle"></div>
   </div>
@@ -93,7 +98,6 @@ class KillTheBalloonsRenderer extends Renderer {
   }
 
   explodeAll() {
-    console.log('explode all');
     for (let z = 0; z < this.balloons.length; z++) {
       const layer = this.balloons[z];
 
@@ -156,6 +160,7 @@ class KillTheBalloonsState {
     this._onExploded = this._onExploded.bind(this);
     this._onTouchStart = this._onTouchStart.bind(this);
     this._onSamplesSet = this._onSamplesSet.bind(this);
+    this._onShowText = this._onShowText.bind(this);
 
     this.renderer = new KillTheBalloonsRenderer(this.experience.spriteConfig, this._onExploded);
 
@@ -170,6 +175,7 @@ class KillTheBalloonsState {
     this.view = new KillTheBalloonsView(template, {
       showInstructions: true,
       score: Object.assign({}, this.globalState.score),
+      showText: 'none',
     }, {
       touchstart: this._onTouchStart,
     }, {
@@ -190,6 +196,7 @@ class KillTheBalloonsState {
     sharedParams.addParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.addParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
     sharedParams.addParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
+    sharedParams.addParamListener('killTheBalloons:showText', this._onShowText);
 
     // init spawn
     this._spawnBalloon();
@@ -208,11 +215,17 @@ class KillTheBalloonsState {
     sharedParams.removeParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.removeParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
     sharedParams.removeParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
+    sharedParams.removeParamListener('killTheBalloons:showText', this._onShowText);
   }
 
   _onExploded() {
     this.view.removeRenderer(this.renderer);
     this.view.remove();
+  }
+
+  _onShowText(value) {
+    this.view.content.showText = value;
+    this.view.render('.show-text');
   }
 
   _updateBalloonSizeDiversity(value) {
