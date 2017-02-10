@@ -5,7 +5,6 @@ Application for _Your smartest choice_ for violin, viola, harp, piano, electroni
 ## Installation
 
 ```
-git clone 
 npm install
 # as the application is based on a development version of soundworks, 
 # soundworks needs to be transpiled first
