@@ -19,7 +19,7 @@ const template = `
       <% } %>
       <div class="show-text">
       <% if (showText === 'fly') { %>
-        <p class="align-center soft-blink">fly with the balloon<br />to avoid the rain!</p>
+        <p class="align-center soft-blink">Fly with the balloon<br />to avoid the rain!</p>
       <% } %>
       </div>
     </div>
@@ -264,6 +264,7 @@ class AvoidTheRainState {
     this.spawnInterval = null;
     this.spawnTimeout = null;
     this.createBalloonTimeout = null;
+    this.harmonyUpdateTimeout = null;
     // if true, acceleration is not available so do something...
     this.emulateMotion = false;
 
@@ -360,13 +361,6 @@ class AvoidTheRainState {
     this.view.$el.classList.remove('background');
     this.view.$el.classList.add('foreground');
 
-    clearTimeout(this.spawnTimeout);
-    clearTimeout(this.createBalloonTimeout);
-
-    this.renderer.exit();
-    this.synth.stopSine();
-    this.synth.triggerGlitch();
-
     // stop listening sharedParams
     const sharedParams = this.experience.sharedParams;
     sharedParams.removeParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
@@ -381,6 +375,14 @@ class AvoidTheRainState {
 
     // restart listening orientation
     this.experience.groupFilter.startListening();
+
+    clearTimeout(this.spawnTimeout);
+    clearTimeout(this.harmonyUpdateTimeout);
+    clearTimeout(this.createBalloonTimeout);
+
+    this.renderer.exit();
+    this.synth.stopSine();
+    this.synth.triggerGlitch();
   }
 
   _onExploded() {
@@ -480,14 +482,14 @@ class AvoidTheRainState {
     // if a respawn was scheduled
     clearTimeout(this.createBalloonTimeout);
 
-    setTimeout(() => {
+    this.harmonyUpdateTimeout = setTimeout(() => {
       this.synth.setNextHarmony(value);
       this.renderer.explode();
       this.synth.stopSine();
       // this.synth.triggerGlitch();
       // respawn ballon in one second (should be bigger than grain duration)
       clearTimeout(this.createBalloonTimeout);
-      this.createBalloonTimeout = setTimeout(this._spawnBalloon, 1000);
+      this.createBalloonTimeout = setTimeout(this._spawnBalloon, 0);
     }, 3000 * Math.random());
   }
 }

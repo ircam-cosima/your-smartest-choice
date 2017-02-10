@@ -23,7 +23,6 @@
     "babel-runtime": "^6.6.1",
     "debug": "^2.1.2",
     "jazz-midi": "^1.5.3",
-    "midi-check": "^1.0.0",
     "soundworks": "collective-soundworks/soundworks#develop",
     "source-map-support": "^0.4.0"
   },

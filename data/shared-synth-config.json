@@ -17,15 +17,19 @@
 },
 {
   "filename": "1_1_1JMS-out_cut_reverse.mp3",
-  "duration": 3.209206349206349,
+  "duration": 5.457573696145125,
   "midiKey": 2,
   "group": "red",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 5.457573696145125,
+  "loopEndVar": 0
 },
 {
   "filename": "1.2_jms_echo4.mp3",
@@ -91,7 +95,6 @@
   "loopEnd": 8.207006802721088,
   "loopEndVar": 0
 },
-
 {
   "filename": "1.3_jms_echo6.mp3",
   "duration": 1.4362131519274377,
@@ -108,7 +111,6 @@
   "loopEnd": 1.4362131519274377,
   "loopEndVar": 0
 },
-
 {
   "filename": "1_1_jms_echo.mp3",
   "duration": 1.6557369614512472,
@@ -147,11 +149,15 @@
   "midiKey": 12,
   "group": "all",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 4.060975056689342,
+  "loopEndVar": 0
 },
 {
   "filename": "1.2_jms_echo4.mp3",
@@ -201,8 +207,6 @@
   "loopEnd": 4.55671201814059,
   "loopEndVar": 0
 },
-
-
 {
   "filename": "3.8_vla01_LO.mp3",
   "duration": 2.66031746031746,
@@ -285,15 +289,19 @@
 },
 {
   "filename": "3.11hp_02.mp3",
-  "duration": 4.55671201814059,
+  "duration": 4.6236734693877555,
   "midiKey": 21,
   "group": "blue",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 4.6236734693877555,
+  "loopEndVar": 0
 },
 {
   "filename": "3.12vla02_B.mp3",
@@ -489,27 +497,35 @@
 },
 {
   "filename": "6.1_VLN06A.mp3",
-  "duration": 0.40224489795918367,
+  "duration": 0.4196371882086168,
   "midiKey": 31,
   "group": "yellow",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 0.4196371882086168,
+  "loopEndVar": 0
 },
 {
   "filename": "6.2_pf06A.mp3",
-  "duration": 0.9932426303854875,
+  "duration": 1.0710204081632653,
   "midiKey": 32,
   "group": "red",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 1.0710204081632653,
+  "loopEndVar": 0
 },
 {
   "filename": "piano-bass-out.mp3",
@@ -527,30 +543,37 @@
   "loopEnd": 3.885578231292517,
   "loopEndVar": 0
 },
-
 {
   "filename": "6.4_hp06A.mp3",
-  "duration": 1.578548752834467,
+  "duration": 1.6457142857142857,
   "midiKey": 34,
   "group": "blue",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 1.6457142857142857,
+  "loopEndVar": 0
 },
 {
   "filename": "7.2_reverse_cresendo.mp3",
-  "duration": 7.713990929705216,
+  "duration": 7.784489795918367,
   "midiKey": 35,
   "group": "all",
   "gain": 1,
-  "sustained": false,
+  "sustained": true,
   "offset": 0,
   "offsetVar": 0,
   "attack": 0,
-  "release": 0
+  "release": 0,
+  "loopStart": 0,
+  "loopStartVar": 0,
+  "loopEnd": 7.784489795918367,
+  "loopEndVar": 0
 },
 {
   "filename": "robot-noise-rising.mp3",

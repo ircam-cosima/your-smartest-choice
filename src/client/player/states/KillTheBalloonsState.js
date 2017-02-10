@@ -36,8 +36,12 @@ class KillTheBalloonsView extends CanvasView {
 
   onResize(...args) {
     super.onResize(...args);
-    this.canvasBoundingClientRect = this.$canvas.getBoundingClientRect();
+    this.updateBoundingRect();
   }
+
+  updateBoundingRect() {
+    this.canvasBoundingClientRect = this.$canvas.getBoundingClientRect();
+  };
 
   hideScore() {
     this.$score.classList.add('hidden');
@@ -177,7 +181,7 @@ class KillTheBalloonsState {
       score: Object.assign({}, this.globalState.score),
       showText: 'none',
     }, {
-      touchstart: this._onTouchStart,
+      touchstart: this._onTouchStart, // bug when comming from avoid the rain
     }, {
       className: ['kill-the-balloons-state', 'foreground'],
     });
@@ -192,14 +196,14 @@ class KillTheBalloonsState {
 
     this.view.addRenderer(this.renderer);
 
+    // init spawn
+    this._spawnBalloon();
+
     const sharedParams = this.experience.sharedParams;
     sharedParams.addParamListener('killTheBalloons:samplesSet', this._onSamplesSet);
     sharedParams.addParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
     sharedParams.addParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
     sharedParams.addParamListener('killTheBalloons:showText', this._onShowText);
-
-    // init spawn
-    this._spawnBalloon();
   }
 
   exit() {
@@ -255,8 +259,8 @@ class KillTheBalloonsState {
 
   _onTouchStart(e) {
     const touch = e.touches[0];
-    const x = touch.clientX - this.view.canvasBoundingClientRect.left;
-    const y = touch.clientY - this.view.canvasBoundingClientRect.top;
+    const x = touch.clientX;
+    const y = touch.clientY;
 
     this._testHit(this.renderer.balloons, x, y);
   }

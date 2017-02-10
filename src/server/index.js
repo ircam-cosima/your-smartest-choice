@@ -57,7 +57,7 @@ const sharedParams = soundworks.server.require('shared-params');
 // globals
 // --------------------------------------
 sharedParams.addEnum('global:state', 'State', ['wait', 'compass', 'balloonsCover', 'killTheBalloons', 'intermezzo', 'avoidTheRain', 'scores', 'end'], 'wait');
-sharedParams.addNumber('global:volume', 'Volume', 0, 1, 0.001, 1);
+sharedParams.addNumber('global:volume', 'Volume', 0, 2, 0.001, 1);
 
 sharedParams.addEnum('global:shared-visual', 'Shared Visual - Add', ['none', 'gif:explodingBalloon', 'gif:flyingBalloons'], 'none');
 

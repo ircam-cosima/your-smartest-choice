@@ -1,9 +1,9 @@
 {
   "__comments": "Directions are counter clock-wise",
   "directions": {
-    "red": 0,
-    "pink": 90,
-    "blue": 180,
-    "yellow": 270,
+    "red": 120,
+    "pink": 210,
+    "blue": 300,
+    "yellow": 30,
   }
 }
