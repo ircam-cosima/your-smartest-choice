@@ -1,13 +1,12 @@
 {
-  "name": "soundworks-template",
+  "name": "Your smartest choice",
   "authors": [
     "Benjamin Matuszewski",
-    "Sébastien Robaszkiewicz",
     "Norbert Schnell"
   ],
-  "description": "Soundworks application template.",
+  "description": "Application for the eponym mixed music piece composed by Huihui Cheng",
   "license": "BSD-3-Clause",
-  "version": "1.1.1",
+  "version": "1.0.0",
   "scripts": {
     "minify": "node ./bin/runner --minify",
     "prewatch": "npm run transpile",
@@ -17,13 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/collective-soundworks/soundworks-template"
+    "url": "https://github.com/ircam-cosima/your-smartest-choice"
   },
   "dependencies": {
     "babel-runtime": "^6.6.1",
     "debug": "^2.1.2",
     "jazz-midi": "^1.5.3",
-    "soundworks": "collective-soundworks/soundworks#develop",
+    "soundworks": "collective-soundworks/soundworks#your-smartest-choice",
     "source-map-support": "^0.4.0"
   },
   "devDependencies": {
