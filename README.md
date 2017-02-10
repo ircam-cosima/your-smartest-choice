@@ -1,6 +1,6 @@
-# Your smartest choice
+# Your Smartest Choice
 
-Application for _Your smartest choice_ for violin, viola, harp, piano, electronic and smartphones composed by Huihui Cheng and created at the 2017 Eclat festival in Stuttgart.
+Application for _Your Smartest Choice_ for violin, viola, harp, piano, electronic and smartphones composed by Huihui Cheng and created at the Eclat festival 2017 in Stuttgart.
 
 ## Installation
 
@@ -30,4 +30,11 @@ _Note:_ the production mode uses minified files so if any logic or configuration
 npm run minify
 ```
 
+## Midi Keyboard
+
+To configure the midi keyboard, update the name of the device in the file `data/midi-config.json`, then restart the server when the keyboard is plugged
+
+```
+npm run watch
+```
 
