@@ -1,38 +1,34 @@
 # Your smartest choice
 
-## list of states
+Application for _Your smartest choice_ for violin, viola, harp, piano, electronic and smartphones composed by Huihui Cheng and created at the 2017 Eclat festival in Stuttgart.
 
-- Wait
-  + enter
-  + exit: explode balloon
+## Installation
 
-- Compass feedback
-  + enter:
-  + exit: fade to white
+```
+git clone 
+npm install
+# as the application is based on a development version of soundworks, 
+# soundworks needs to be transpiled first
+cd ./node_modules/soundworks
+npm install
+npm run transpile
+cd ../..
+# ...then the server can be launched
+npm run watch
+```
 
-- Ballons cover screen
-  + enter:
-  + exit: fade to white ?
+## Production
 
-  events: 
-  + display "click me"
+To launch in production mode, run the following command:
 
-  question: is their still a gif, when to display it ?
+```sh
+sudo ENV=production node dist/server/index.js
+```
 
-- "kill the balloons"
-  + enter: "ready ?" for few seconds (Huihui triggers game start)
-  + exit: explode all remaining balloons
+_Note:_ the production mode uses minified files so if any logic or configuration changes has been made into the code, the following command should be run first:
 
-- intermezzo 
-  introduce game 2 (show score from game 1)
+```
+npm run minify
+```
 
-  events:
-  + trigger stage 2;
 
-- "avoid the rain"
-  enter: 
-  exit:
-
-- scores
-
-- end ("Thanks !")
