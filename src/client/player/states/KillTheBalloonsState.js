@@ -21,6 +21,9 @@ const template = `
       <% if (showText === 'tempo') { %>
         <p class="align-center soft-blink">On tempo!</p>
       <% } %>
+      <% if (clickColor !== '') { %>
+        <p class="align-center">Click on <%= clickColor %>!</p>
+      <% } %>
       </div>
     </div>
     <div class="section-bottom flex-middle"></div>
@@ -165,6 +168,7 @@ class KillTheBalloonsState {
     this._onTouchStart = this._onTouchStart.bind(this);
     this._onSamplesSet = this._onSamplesSet.bind(this);
     this._onShowText = this._onShowText.bind(this);
+    this._onClickColorText = this._onClickColorText.bind(this);
 
     this.renderer = new KillTheBalloonsRenderer(this.experience.spriteConfig, this._onExploded);
 
@@ -180,6 +184,7 @@ class KillTheBalloonsState {
       showInstructions: true,
       score: Object.assign({}, this.globalState.score),
       showText: 'none',
+      clickColor: '',
     }, {
       touchstart: this._onTouchStart, // bug when comming from avoid the rain
     }, {
@@ -204,6 +209,7 @@ class KillTheBalloonsState {
     sharedParams.addParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
     sharedParams.addParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
     sharedParams.addParamListener('killTheBalloons:showText', this._onShowText);
+    sharedParams.addParamListener('killTheBalloons:clickColorText', this._onClickColorText);
   }
 
   exit() {
@@ -220,6 +226,7 @@ class KillTheBalloonsState {
     sharedParams.removeParamListener('killTheBalloons:spawnInterval', this._updateMaxSpawn);
     sharedParams.removeParamListener('killTheBalloons:sizeDiversity', this._updateBalloonSizeDiversity);
     sharedParams.removeParamListener('killTheBalloons:showText', this._onShowText);
+    sharedParams.removeParamListener('killTheBalloons:clickColorText', this._onClickColorText);
   }
 
   _onExploded() {
@@ -229,6 +236,24 @@ class KillTheBalloonsState {
 
   _onShowText(value) {
     this.view.content.showText = value;
+    this.view.render('.show-text');
+  }
+
+  _onClickColorText(value) {
+    switch (value) {
+      case 'none':
+        this.view.content.clickColor = '';
+        break
+      case 'random':
+        const colors = ['blue', 'pink', 'yellow', 'red'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        this.view.content.clickColor = color;
+        break;
+      default:
+        this.view.content.clickColor = value;
+        break;
+    }
+
     this.view.render('.show-text');
   }
 

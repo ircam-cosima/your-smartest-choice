@@ -5,8 +5,10 @@ const template = `
   <canvas class="background"></canvas>
   <div class="foreground">
     <div class="section-top"></div>
-    <div class="section-center flex-middle">
-      <p><%= angle %></p>
+    <div class="section-center">
+      <% if (instructions !== 'none') { %>
+      <p class="align-center"><%= instructions %></p>
+      <% } %>
     </div>
     <div class="section-bottom flex-middle">
       <p class="small">Use the compass to choose<br />your instrument</p>
@@ -197,13 +199,16 @@ class CompassState {
       this.experience.spriteConfig,
       this.experience.areaConfig.directions
     );
+
+    this._onInstructions = this._onInstructions.bind(this);
   }
 
   enter() {
     this.view = new CanvasView(template, {
       angle: '',
+      instructions: '',
     }, {}, {
-      className: ['wait-state', 'foreground']
+      className: ['wait-state', 'foreground'],
     });
 
     this.view.render();
@@ -220,6 +225,9 @@ class CompassState {
     this.experience.addCompassListener('group', this._onGroupUpdate);
     // set renderer with current group
     this.renderer.setColor(this.experience.groupFilter.getState());
+
+    const sharedParams = this.experience.sharedParams;
+    sharedParams.addParamListener('compass:instructions', this._onInstructions);
   }
 
   exit() {
@@ -231,6 +239,9 @@ class CompassState {
 
     this.experience.removeCompassListener('compass', this._onCompassUpdate);
     this.experience.removeCompassListener('group', this._onGroupUpdate);
+
+    const sharedParams = this.experience.sharedParams;
+    sharedParams.removeParamListener('compass:instructions', this._onInstructions);
   }
 
   _onCompassUpdate(angle) {
@@ -239,6 +250,11 @@ class CompassState {
 
   _onGroupUpdate(color) {
     this.renderer.setColor(color);
+  }
+
+  _onInstructions(value) {
+    this.view.content.instructions = value;
+    this.view.render('.section-center');
   }
 }
 

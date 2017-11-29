@@ -21,6 +21,9 @@ const template = `
       <% if (showText === 'fly') { %>
         <p class="align-center soft-blink">Fly with the balloon<br />to avoid the rain!</p>
       <% } %>
+      <% if (goToColor !== '') { %>
+        <p class="align-center">Go to <%= goToColor %>!</p>
+      <% } %>
       </div>
     </div>
     <div class="section-bottom flex-middle"></div>
@@ -280,6 +283,7 @@ class AvoidTheRainState {
     this._onHarmonyUpdate = this._onHarmonyUpdate.bind(this);
     this._onSineVolumeUpdate = this._onSineVolumeUpdate.bind(this);
     this._onShowText = this._onShowText.bind(this);
+    this._onGoToText = this._onGoToText.bind(this);
 
     this.renderer = new AvoidTheRainRenderer(this.experience.spriteConfig, this._onRainHit, this._onExploded);
 
@@ -298,6 +302,7 @@ class AvoidTheRainState {
       showInstructions: true,
       score: Object.assign({}, this.globalState.score),
       showText: 'none',
+      goToColor: '',
     }, {}, {
       className: ['avoid-the-rain-state', 'foreground'],
     });
@@ -338,6 +343,7 @@ class AvoidTheRainState {
     sharedParams.addParamListener('avoidTheRain:harmony', this._onHarmonyUpdate);
     sharedParams.addParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
     sharedParams.addParamListener('avoidTheRain:showText', this._onShowText);
+    sharedParams.addParamListener('avoidTheRain:goToText', this._onGoToText);
     // call this at the end to be sure all other params are ready
     sharedParams.addParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
@@ -368,6 +374,7 @@ class AvoidTheRainState {
     sharedParams.removeParamListener('avoidTheRain:spawnInterval', this._updateSpawnInterval);
     sharedParams.removeParamListener('avoidTheRain:sineVolume', this._onSineVolumeUpdate);
     sharedParams.removeParamListener('avoidTheRain:showText', this._onShowText);
+    sharedParams.removeParamListener('avoidTheRain:goToText', this._onGoToText);
     sharedParams.removeParamListener('avoidTheRain:toggleRain', this._toggleRain);
 
     if (window.DeviceMotionEvent)
@@ -392,6 +399,21 @@ class AvoidTheRainState {
 
   _onShowText(value) {
     this.view.content.showText = value;
+    this.view.render('.show-text');
+  }
+
+  _onGoToText(value) {
+    switch (value) {
+      case 'none':
+        this.view.content.goToColor = '';
+        break
+      case 'random':
+        const colors = ['blue', 'pink', 'yellow', 'red'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        this.view.content.goToColor = color;
+        break;
+    }
+
     this.view.render('.show-text');
   }
 

@@ -8,6 +8,9 @@ class ControllerExperience extends BasicSharedController {
     this.setGuiOptions('global:volume', { type: 'slider', size: 'large' });
     this.setGuiOptions('global:shared-visual', { type: 'buttons' });
 
+    // compass
+    this.setGuiOptions('compass:instructions', { type: 'buttons' });
+
     // balloon cover
     this.setGuiOptions('balloonCover:explode', { type: 'buttons' });
 
@@ -16,6 +19,7 @@ class ControllerExperience extends BasicSharedController {
     this.setGuiOptions('killTheBalloons:sizeDiversity', { type: 'slider', size: 'large', });
     this.setGuiOptions('killTheBalloons:samplesSet', { type: 'buttons' });
     this.setGuiOptions('killTheBalloons:showText', { type: 'buttons' });
+    this.setGuiOptions('killTheBalloons:clickColorText', { type: 'buttons' });
 
     // avoid the rain
     this.setGuiOptions('avoidTheRain:balloonRadius', { type: 'slider', size: 'large' });
@@ -23,6 +27,7 @@ class ControllerExperience extends BasicSharedController {
     this.setGuiOptions('avoidTheRain:toggleRain', { type: 'buttons' });
     this.setGuiOptions('avoidTheRain:spawnInterval', { type: 'slider', size: 'large' });
     this.setGuiOptions('avoidTheRain:showText', { type: 'buttons' });
+    this.setGuiOptions('avoidTheRain:goToText', { type: 'buttons' });
 
     // scores
     this.setGuiOptions('score:showGlobalScore', { type: 'buttons' });

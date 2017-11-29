@@ -64,6 +64,12 @@ sharedParams.addEnum('global:shared-visual', 'Shared Visual - Add', ['none', 'gi
 // --------------------------------------
 // balloon cover
 // --------------------------------------
+sharedParams.addText('compass:title', '&nbsp;', 'COMPASS');
+sharedParams.addEnum('compass:instructions', 'Compass - instructions', ['none', 'Walk around', 'Stand still', 'Be quite', 'Listen around'], 'none');
+
+// --------------------------------------
+// balloon cover
+// --------------------------------------
 sharedParams.addText('balloonCover:title', '&nbsp;', 'BALLOONS COVER');
 sharedParams.addEnum('balloonCover:explode', 'BalloonCover - explode', ['none', 'blue', 'pink', 'yellow', 'red'], 'none');
 
@@ -75,6 +81,7 @@ sharedParams.addNumber('killTheBalloons:spawnInterval', 'KillTheBalloons - spawn
 sharedParams.addNumber('killTheBalloons:sizeDiversity', 'KillTheBalloons - sizeDiversity', 0, 1, 0.001, 0);
 sharedParams.addEnum('killTheBalloons:samplesSet', 'KillTheBalloons - samplesSet', [0, 1, 2, 3, 4], 0);
 sharedParams.addEnum('killTheBalloons:showText', 'KillTheBalloons - showText', ['none', 'tempo'], 'none');
+sharedParams.addEnum('killTheBalloons:clickColorText', 'killTheBalloons - text "click the"', ['none', 'blue', 'pink', 'yellow', 'red', 'random'], 'none');
 
 // --------------------------------------
 // avoid the rain
@@ -91,6 +98,7 @@ sharedParams.addNumber('avoidTheRain:sineVolume', 'AvoidTheRain - sineVolume', 0
 sharedParams.addNumber('avoidTheRain:balloonRadius', 'AvoidTheRain - balloonRadius', 40, 200, 1, 40);
 sharedParams.addNumber('avoidTheRain:spawnInterval', 'AvoidTheRain - spawnInterval', 0, 1, 0.001, 1);
 sharedParams.addEnum('avoidTheRain:showText', 'AvoidTheRain - showText', ['none', 'fly'], 'none');
+sharedParams.addEnum('avoidTheRain:goToText', 'AvoidTheRain - text "go to"', ['none', 'random'], 'none');
 
 // --------------------------------------
 // score
