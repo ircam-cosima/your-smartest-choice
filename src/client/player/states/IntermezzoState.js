@@ -1,4 +1,4 @@
-import { CanvasView, Renderer } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
 
 const template = `
@@ -43,7 +43,7 @@ class IntermezzoView extends CanvasView {
   }
 }
 
-class IntermezzoRenderer extends Renderer {
+class IntermezzoRenderer extends Canvas2dRenderer {
   constructor(spriteConfig, score, onExploded) {
     super();
 
@@ -192,7 +192,7 @@ class IntermezzoState {
     this.view.$el.classList.remove('foreground');
     this.view.$el.classList.add('background');
 
-    this.view.content.showScoreNumbers = false;
+    this.view.model.showScoreNumbers = false;
     this.view.render('.score-wrapper');
 
     this.renderer.explode();

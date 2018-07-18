@@ -1,6 +1,6 @@
-import { Renderer } from 'soundworks/client';
+import { Canvas2dRenderer } from 'soundworks/client';
 
-class SharedVisuals extends Renderer {
+class SharedVisuals extends Canvas2dRenderer {
   constructor(groupConfig) {
     super();
 

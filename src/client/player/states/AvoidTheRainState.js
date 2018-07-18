@@ -1,4 +1,4 @@
-import { CanvasView, Renderer, viewport } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer, viewport } from 'soundworks/client';
 import AvoidTheRainSynth from '../audio/AvoidTheRainSynth';
 import Balloon from '../renderers/Balloon';
 
@@ -109,7 +109,7 @@ class RainDrop {
   }
 }
 
-class AvoidTheRainRenderer extends Renderer {
+class AvoidTheRainRenderer extends Canvas2dRenderer {
   constructor(spriteConfig, onRainHit, onExploded) {
     super();
 
@@ -317,11 +317,11 @@ class AvoidTheRainState {
     this.view.setPreRender((ctx, dt, width, height) => {
       ctx.clearRect(0, 0, width, height);
 
-      if (this.view.content.showInstructions === true) {
+      if (this.view.model.showInstructions === true) {
         instructionsTime += dt;
 
         if (instructionsTime > instructionsDuration) {
-          this.view.content.showInstructions = false;
+          this.view.model.showInstructions = false;
           this.view.render('.section-center');
         }
       }
@@ -398,19 +398,19 @@ class AvoidTheRainState {
   }
 
   _onShowText(value) {
-    this.view.content.showText = value;
+    this.view.model.showText = value;
     this.view.render('.show-text');
   }
 
   _onGoToText(value) {
     switch (value) {
       case 'none':
-        this.view.content.goToColor = '';
+        this.view.model.goToColor = '';
         break
       case 'random':
         const colors = ['blue', 'pink', 'yellow', 'red'];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        this.view.content.goToColor = color;
+        this.view.model.goToColor = color;
         break;
     }
 
@@ -462,7 +462,7 @@ class AvoidTheRainState {
 
   _onRainHit(color) {
     this.globalState.score[color] -= 1;
-    this.view.content.score[color] -= 1;
+    this.view.model.score[color] -= 1;
     this.view.render('.score');
 
     this.synth.stopSine();
@@ -479,7 +479,7 @@ class AvoidTheRainState {
 
   _toggleRain(value) {
     if (value === 'start' &&
-        this.view.content.state !== 'intro' &&
+        this.view.model.state !== 'intro' &&
         this.spawnTimeout === null
     ) {
       this._spawnRainDrop();

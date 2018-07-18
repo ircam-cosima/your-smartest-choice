@@ -6,12 +6,6 @@ Application for _Your Smartest Choice_ for violin, viola, harp, piano, electroni
 
 ```
 npm install
-# as the application is based on a development version of soundworks, 
-# soundworks needs to be transpiled first
-cd ./node_modules/soundworks
-npm install
-npm run transpile
-cd ../..
 # ...then the server can be launched
 npm run watch
 ```

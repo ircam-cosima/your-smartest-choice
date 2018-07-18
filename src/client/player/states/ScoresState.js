@@ -1,4 +1,4 @@
-import { CanvasView, Renderer } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
 
 const template = `
@@ -76,7 +76,7 @@ class FadeInBalloon extends Balloon {
   }
 }
 
-class ScoresRenderer extends Renderer {
+class ScoresRenderer extends Canvas2dRenderer {
   constructor(spriteConfig, score) {
     super();
 
@@ -363,7 +363,7 @@ class ScoresState {
   _onShowGlobalScore(value) {
     if (value === 'show') {
       this.renderer.showGlobalScore = true;
-      this.view.content.showGlobalScore = true;
+      this.view.model.showGlobalScore = true;
       this.view.render('.score-wrapper');
     }
   }
@@ -375,11 +375,11 @@ class ScoresState {
 
       // update local score
       const remainValue = Math.round(this.localScore[color] * (1 - value));
-      this.view.content.localScore[color] = remainValue;
+      this.view.model.localScore[color] = remainValue;
       // update global score
       if (this.globalScore) {
         const percent = this.globalScore[color] * value;
-        this.view.content.globalScore[color] = `${percent.toFixed(1)}%`;
+        this.view.model.globalScore[color] = `${percent.toFixed(1)}%`;
       }
 
       this.view.render(`.score.${color} p.local`);
@@ -391,7 +391,7 @@ class ScoresState {
     if (color !== 'none') {
       this.renderer.explode(color);
 
-      this.view.content.localScore[color] = '';
+      this.view.model.localScore[color] = '';
       this.view.render('.score-wrapper');
     }
   }

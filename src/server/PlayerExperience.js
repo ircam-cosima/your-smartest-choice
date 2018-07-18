@@ -10,6 +10,9 @@ export default class PlayerExperience extends Experience {
     this.sharedParams = this.require('shared-params');
     this.sync = this.require('sync');
 
+    this.audioBufferManager = this.require('audio-buffer-manager');
+    this.scheduler = this.require('sync-scheduler');
+
     this.midi = this.require('midi', midiConfig);
 
     this.winnersResults = winnersResults;
@@ -43,15 +46,22 @@ export default class PlayerExperience extends Experience {
   enter(client) {
     super.enter(client);
 
-    this.send(client, 'global:state', null, this.currentState);
-
     // everything is faked now
     this.receive(client, 'player:score', () => {
       this.send(client, 'global:score', this.winnersResults);
     });
+
+    this.sharedParams.update('numPlayers', this.clients.length);
+
+    // ugly hack...
+    setTimeout(() => {
+      this.send(client, 'global:state', null, this.currentState);
+    }, 100);
   }
 
   exit(client) {
     super.exit(client);
+
+    this.sharedParams.update('numPlayers', this.clients.length);
   }
 }

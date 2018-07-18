@@ -1,4 +1,4 @@
-import { CanvasView, Renderer } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
 
 const template = `
@@ -11,7 +11,7 @@ const template = `
   </div>
 `;
 
-class BalloonCoverRenderer extends Renderer {
+class BalloonCoverRenderer extends Canvas2dRenderer {
   constructor(spriteConfig) {
     super();
 

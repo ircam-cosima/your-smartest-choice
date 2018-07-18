@@ -1,4 +1,4 @@
-import { CanvasView, Renderer } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
 
 const template = `
@@ -15,7 +15,7 @@ const template = `
   </div>
 `;
 
-class BalloonRenderer extends Renderer {
+class BalloonRenderer extends Canvas2dRenderer {
   constructor(spriteConfig, onExplode) {
     super();
 
@@ -105,7 +105,7 @@ class WaitState {
     this.view.$el.classList.remove('foreground');
     this.view.$el.classList.add('background');
 
-    this.view.content.showText = false;
+    this.view.model.showText = false;
     this.view.render('.section-bottom');
     // make the balloon explode, wait for
     this.renderer.explode();

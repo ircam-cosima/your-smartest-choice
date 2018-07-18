@@ -7,20 +7,22 @@ import viewContent from '../shared/viewContent';
 // application services
 import GroupFilter from '../shared/services/GroupFilter';
 import ImageManager from '../shared/services/ImageManager';
+import serviceViews from '../shared/serviceViews';
 // player specific
 // import PlatformAlt from '.services/PlatformAlt'; // override platform to add renderer
 
 
 // launch application when document is fully loaded
 window.addEventListener('load', () => {
-  // initialize the client with configuration received
-  // from the server through the `index.html`
-  // @see {~/src/server/index.js}
-  // @see {~/html/default.ejs}
-  const config = window.soundworksConfig;
+  document.body.classList.remove('loading');
+
+  const config = Object.assign({ appContainer: '#container' }, window.soundworksConfig);
   soundworks.client.init(config.clientType, config);
-  soundworks.client.setViewContentDefinitions(viewContent);
-  soundworks.client.setViewTemplateDefinitions(viewTemplates);
+
+  soundworks.client.setServiceInstanciationHook((id, instance) => {
+    if (serviceViews.has(id))
+      instance.view = serviceViews.get(id, config);
+  });
 
   // create client side (player) experience
   const { assetsDomain, sharedSynthConfig } = config;

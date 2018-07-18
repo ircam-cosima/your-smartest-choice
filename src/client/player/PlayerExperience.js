@@ -147,7 +147,7 @@ class PlayerExperience extends soundworks.Experience {
 
     this.sharedParams = this.require('shared-params');
     this.sync = this.require('sync');
-    this.scheduler = this.require('scheduler');
+    this.scheduler = this.require('sync-scheduler');
 
     this._setState = this._setState.bind(this);
     // this._onAcceleration = this._onAcceleration.bind(this);
@@ -159,8 +159,10 @@ class PlayerExperience extends soundworks.Experience {
     this._compassListeners = {};
   }
 
-  init() {
-    // populate spriteConfig with the sprite images
+  start() {
+    super.start();
+
+        // populate spriteConfig with the sprite images
     this.spriteConfig.groups.blue.image = this.imageManager.getAsCanvas('sprite:blue');
     this.spriteConfig.groups.pink.image = this.imageManager.getAsCanvas('sprite:pink');
     this.spriteConfig.groups.yellow.image = this.imageManager.getAsCanvas('sprite:yellow');
@@ -174,79 +176,67 @@ class PlayerExperience extends soundworks.Experience {
     this.spriteConfig.colors = Object.keys(this.spriteConfig.groups);
 
     // initialize the view
-    this.viewTemplate = viewTemplate;
-    this.viewContent = {};
-    this.viewCtor = PlayerView;
-    this.viewOptions = {
+    this.view = new PlayerView(viewTemplate, {}, {}, {
       preservePixelRatio: false,
       ratios: { '#state-container': 1 },
-    };
-    this.viewEvents = {};
-    this.view = this.createView();
-  }
-
-  start() {
-    super.start();
-
-    if (!this.hasStarted)
-      this.init();
-
-    this.show();
-
-    // master audio
-    this.master = audioContext.createGain();
-    this.master.connect(audioContext.destination);
-    this.master.gain.value = 1;
-
-    // global view
-    this.view.setPreRender((ctx, dt, width, height) => {
-      ctx.clearRect(0, 0, width, height);
     });
 
-    // global synth and visuals (Huihui controlled)
-    this.sharedSynth = new SharedSynth(
-      this.sharedSynthConfig,
-      this.audioBufferManager.get('shared-synth'),
-      this.groupFilter,
-      this.getAudioDestination()
-    );
+    this.show().then(() => {
+      // master audio
+      this.master = audioContext.createGain();
+      this.master.connect(audioContext.destination);
+      this.master.gain.value = 1;
 
-    this.sharedVisuals = new SharedVisuals(this.spriteConfig.groups);
+      // global view
+      this.view.setPreRender((ctx, dt, width, height) => {
+        ctx.clearRect(0, 0, width, height);
+      });
 
-    this.view.addRenderer(this.sharedVisuals);
+      // global synth and visuals (Huihui controlled)
+      this.sharedSynth = new SharedSynth(
+        this.sharedSynthConfig,
+        this.audioBufferManager.get('shared-synth'),
+        this.groupFilter,
+        this.getAudioDestination()
+      );
 
-    // @todo - revise all this, this is far from really efficient
-    this.receive('note:on', (pitch) => {
-      const res = this.sharedSynth.noteOn(pitch);
+      this.sharedVisuals = new SharedVisuals(this.spriteConfig.groups);
 
-      if (res !== null)
-        this.sharedVisuals.trigger(res.group, res.sustained, res.duration);
-    });
+      this.view.addRenderer(this.sharedVisuals);
 
-    this.receive('note:off', (pitch) => {
-      const res = this.sharedSynth.noteOff(pitch);
+      // @todo - revise all this, this is far from really efficient
+      this.receive('note:on', (pitch) => {
+        const res = this.sharedSynth.noteOn(pitch);
 
-      if (res !== null)
-        this.sharedVisuals.stop(res.group);
-    });
+        if (res !== null)
+          this.sharedVisuals.trigger(res.group, res.sustained, res.duration);
+      });
 
-    this.addCompassListener('group', (group) => {
-      const res = this.sharedSynth.updateGroup(group);
+      this.receive('note:off', (pitch) => {
+        const res = this.sharedSynth.noteOff(pitch);
 
-      if (res !== null)
-        this.sharedVisuals.trigger(res.group, res.sustained, res.duration);
-      else
-        this.sharedVisuals.kill();
-    });
+        if (res !== null)
+          this.sharedVisuals.stop(res.group);
+      });
 
-    // state of the application
-    this.groupFilter.startListening();
-    this.groupFilter.addListener(this._onCompassUpdate);
-    this.sharedParams.addParamListener('global:volume', this._setVolume);
-    this.sharedParams.addParamListener('global:shared-visual', this._onSharedVisualTrigger);
+      this.addCompassListener('group', (group) => {
+        const res = this.sharedSynth.updateGroup(group);
 
-    this.receive('global:state', (syncTime, state) => {
-      this.scheduler.defer(() => this._setState(state), syncTime);
+        if (res !== null)
+          this.sharedVisuals.trigger(res.group, res.sustained, res.duration);
+        else
+          this.sharedVisuals.kill();
+      });
+
+      // state of the application
+      this.groupFilter.startListening();
+      this.groupFilter.addListener(this._onCompassUpdate);
+      this.sharedParams.addParamListener('global:volume', this._setVolume);
+      this.sharedParams.addParamListener('global:shared-visual', this._onSharedVisualTrigger);
+
+      this.receive('global:state', (syncTime, state) => {
+        this.scheduler.defer(() => this._setState(state), syncTime);
+      });
     });
   }
 

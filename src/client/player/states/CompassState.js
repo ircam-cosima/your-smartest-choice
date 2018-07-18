@@ -1,4 +1,4 @@
-import { CanvasView, Renderer } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
 
 const template = `
@@ -91,7 +91,7 @@ class CompassBalloon extends Balloon {
   }
 }
 
-class CompassRenderer extends Renderer {
+class CompassRenderer extends Canvas2dRenderer {
   constructor(spriteConfig, directions) {
     super();
 
@@ -253,7 +253,7 @@ class CompassState {
   }
 
   _onInstructions(value) {
-    this.view.content.instructions = value;
+    this.view.model.instructions = value;
     this.view.render('.section-center');
   }
 }

@@ -1,17 +1,23 @@
 // import client side soundworks and player experience
 import * as soundworks from 'soundworks/client';
-import viewTemplates from '../shared/viewTemplates';
-import viewContent from '../shared/viewContent';
 import ControllerExperience from './ControllerExperience';
+import serviceViews from '../shared/serviceViews';
 
-window.addEventListener('load', () => {
-  const config = window.soundworksConfig;
+function bootstrap() {
+
+  document.body.classList.remove('loading');
+
+
+  const config = Object.assign({ appContainer: '#container' }, window.soundworksConfig);
   soundworks.client.init(config.clientType, config);
-  soundworks.client.setViewContentDefinitions(viewContent);
-  soundworks.client.setViewTemplateDefinitions(viewTemplates);
 
-  const { assetsDomain, sharedSynthConfig } = config;
-  const controller = new ControllerExperience();
+  soundworks.client.setServiceInstanciationHook((id, instance) => {
+    if (serviceViews.has(id))
+      instance.view = serviceViews.get(id, config);
+  });
 
+  const controller = new ControllerExperience(config.assetsDomain);
   soundworks.client.start();
-});
+}
+
+window.addEventListener('load', bootstrap);

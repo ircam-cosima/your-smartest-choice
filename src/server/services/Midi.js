@@ -28,6 +28,8 @@ class Midi extends Service {
       console.log(`Listening midi interface: ${key} (${this.options[key]})`);
       console.log('----------------------------------------------------------');
     }
+
+    this.ready();
   }
 
   _onMessage(key) {

@@ -1,4 +1,4 @@
-import { CanvasView, Renderer } from 'soundworks/client';
+import { CanvasView, Canvas2dRenderer } from 'soundworks/client';
 import Balloon from '../renderers/Balloon';
 import KillTheBalloonsSynth from '../audio/KillTheBalloonsSynth';
 
@@ -66,7 +66,7 @@ class RisingBalloon extends Balloon {
   }
 }
 
-class KillTheBalloonsRenderer extends Renderer {
+class KillTheBalloonsRenderer extends Canvas2dRenderer {
   constructor(spriteConfig, onExploded) {
     super();
 
@@ -235,22 +235,22 @@ class KillTheBalloonsState {
   }
 
   _onShowText(value) {
-    this.view.content.showText = value;
+    this.view.model.showText = value;
     this.view.render('.show-text');
   }
 
   _onClickColorText(value) {
     switch (value) {
       case 'none':
-        this.view.content.clickColor = '';
+        this.view.model.clickColor = '';
         break
       case 'random':
         const colors = ['blue', 'pink', 'yellow', 'red'];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        this.view.content.clickColor = color;
+        this.view.model.clickColor = color;
         break;
       default:
-        this.view.content.clickColor = value;
+        this.view.model.clickColor = value;
         break;
     }
 
@@ -312,15 +312,15 @@ class KillTheBalloonsState {
   }
 
   _updateScore(color) {
-    if (this.view.content.showInstructions === true) {
-      this.view.content.showInstructions = false;
+    if (this.view.model.showInstructions === true) {
+      this.view.model.showInstructions = false;
       this.view.render('.section-center');
     }
 
     // update model
     this.globalState.score[color] += 1;
     // update view model
-    this.view.content.score[color] += 1;
+    this.view.model.score[color] += 1;
     this.view.render('.score');
   }
 

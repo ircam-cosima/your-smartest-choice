@@ -1,6 +1,7 @@
 import 'source-map-support/register'; // enable sourcemaps in node
 import * as soundworks from 'soundworks/server';
 import PlayerExperience from './PlayerExperience';
+import ControllerExperience from './ControllerExperience';
 
 import defaultConfig from './config/default';
 import productionConfig from './config/production';
@@ -52,6 +53,8 @@ const winnersResults = {
 // ----------------------------------------------------
 
 const sharedParams = soundworks.server.require('shared-params');
+
+sharedParams.addText('numPlayers', '# players', '0');
 
 // --------------------------------------
 // globals
@@ -117,6 +120,6 @@ sharedParams.addEnum('score:explode', 'Score - Explode', ['none', 'blue', 'pink'
 // ----------------------------------------------------
 
 const experience = new PlayerExperience('player', midiConfig, winnersResults);
-const controller = new soundworks.BasicSharedController('controller');
+const controller = new ControllerExperience('controller');
 
 soundworks.server.start();
