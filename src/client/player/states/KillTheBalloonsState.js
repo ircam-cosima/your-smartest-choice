@@ -18,8 +18,8 @@ const template = `
         <p class="align-center soft-blink">Hit the balloons!</p>
       <% } %>
       <div class="show-text">
-      <% if (showText === 'tempo') { %>
-        <p class="align-center soft-blink">On tempo!</p>
+      <% if (showText !== 'none') { %>
+        <p class="align-center soft-blink"><%= showText %></p>
       <% } %>
       <% if (clickColor !== '') { %>
         <p class="align-center">Click on <%= clickColor %>!</p>
