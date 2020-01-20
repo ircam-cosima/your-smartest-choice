@@ -123,7 +123,7 @@ class PlayerExperience extends soundworks.Experience {
       'avoid-the-rain:glitches': avoidTheRainGlitches,
     };
 
-    this.platform = this.require('platform', { features: ['web-audio'] });
+    this.platform = this.require('platform', { features: ['web-audio', 'device-sensor'] });
 
     this.checkin = this.require('checkin', { showDialog: false });
     this.audioBufferManager = this.require('audio-buffer-manager', {

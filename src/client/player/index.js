@@ -24,6 +24,34 @@ window.addEventListener('load', () => {
       instance.view = serviceViews.get(id, config);
   });
 
+  const platformService = soundworks.serviceManager.require('platform');
+
+  platformService.addFeatureDefinition({
+    id: 'device-sensor',
+    check: function () {
+      return soundworks.client.platform.isMobile; // true if phone or tablet
+    },
+    interactionHook() {
+      return new Promise((resolve, reject) => {
+        if (typeof window.DeviceMotionEvent.requestPermission === 'function') {
+          window.DeviceMotionEvent.requestPermission()
+            .then(response => {
+              if (response == 'granted') {
+                resolve(true);
+              } else {
+                resolve(false);
+              }
+            })
+            .catch(err => {
+              resolve(false);
+            })
+        } else {
+          resolve(true);
+        }
+      });
+    }
+  });
+
   // create client side (player) experience
   const { assetsDomain, sharedSynthConfig } = config;
   const experience = new PlayerExperience(assetsDomain, sharedSynthConfig);
